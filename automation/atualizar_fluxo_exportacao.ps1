@@ -141,20 +141,31 @@ Invoke-Step "Gerar pedidos/SKUs/resumo, detectar alteracoes e montar o painel (N
 Write-Log "INICIO: Enviar painel atualizado pro GitHub (privado)"
 Push-Location $projectRoot
 try {
-    & git add -A 2>&1 | Out-Null
+    # De proposito SEM "2>&1" em nenhuma chamada de git aqui: no PowerShell 5.1, redirecionar o
+    # stderr de um executavel nativo pra dentro do pipeline embrulha cada linha (mesmo avisos
+    # inofensivos, como o de conversao de fim de linha CRLF/LF) num ErrorRecord - com
+    # $ErrorActionPreference="Stop" (topo do script) isso derruba o try/catch como se fosse erro
+    # de verdade, mesmo quando o git terminou com sucesso (exit code 0). Ja aconteceu de verdade
+    # em 24/08/2026: o aviso de CRLF interrompeu o envio bem antes do "git push" rodar.
+    & git add -A
     $statusOutput = & git status --porcelain
     if (-not $statusOutput) {
         Write-Log "OK: nada mudou no painel - nada pra enviar"
     }
     else {
         $commitMsg = "Atualizacao automatica {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm")
-        & git commit -m $commitMsg 2>&1 | Out-Null
-        $pushResult = & git push origin main 2>&1
+        & git commit -m $commitMsg | Out-Null
         if ($LASTEXITCODE -ne 0) {
-            Write-Log "AVISO: git push falhou (painel local esta ok, so nao sincronizou com o GitHub agora) - $($pushResult -join ' | ')"
+            Write-Log "AVISO: git commit falhou (painel local esta ok, so nao sincronizou com o GitHub agora)"
         }
         else {
-            Write-Log "OK: Enviado pro GitHub - $commitMsg"
+            & git push origin main
+            if ($LASTEXITCODE -ne 0) {
+                Write-Log "AVISO: git push falhou (painel local esta ok, so nao sincronizou com o GitHub agora)"
+            }
+            else {
+                Write-Log "OK: Enviado pro GitHub - $commitMsg"
+            }
         }
     }
 }

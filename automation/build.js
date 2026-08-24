@@ -396,17 +396,21 @@ function processValidationMarkers(baseline, currentOrders) {
   currentOrders.forEach(o => { if (o.invoice) currentByInvoice[o.invoice] = o; });
 
   const files = fs.readdirSync(DOWNLOADS_DIR).filter(f => /^validar-.*\.json$/i.test(f));
+  const processedInvoices = [];
   files.forEach(f => {
     const full = path.join(DOWNLOADS_DIR, f);
     try {
       const marker = JSON.parse(fs.readFileSync(full, 'utf8'));
       const current = marker.invoice && currentByInvoice[marker.invoice];
-      if (current) byInvoice[marker.invoice] = current;
+      if (current) { byInvoice[marker.invoice] = current; processedInvoices.push(marker.invoice); }
     } catch (e) {
       // marcador corrompido/ilegível - ignora o conteúdo, mas remove mesmo assim (linha abaixo)
     }
     fs.unlinkSync(full);
   });
+  if (processedInvoices.length) {
+    console.log('Validacao aplicada (destaque removido): ' + processedInvoices.join(', '));
+  }
 
   return Object.values(byInvoice);
 }
