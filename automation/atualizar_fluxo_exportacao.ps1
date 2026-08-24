@@ -134,4 +134,33 @@ Invoke-Step "Gerar pedidos/SKUs/resumo, detectar alteracoes e montar o painel (N
     finally { Pop-Location }
 }
 
+# Envio pro GitHub tratado como nao-fatal de proposito: nessa altura o painel local ja foi
+# atualizado com sucesso (unica coisa que realmente importa se a internet cair ou o push falhar
+# por qualquer motivo transitorio) - um problema so no envio nao deveria fazer a rotina inteira
+# "falhar" quando o trabalho de verdade (extracao + build) ja terminou bem.
+Write-Log "INICIO: Enviar painel atualizado pro GitHub (privado)"
+Push-Location $projectRoot
+try {
+    & git add -A 2>&1 | Out-Null
+    $statusOutput = & git status --porcelain
+    if (-not $statusOutput) {
+        Write-Log "OK: nada mudou no painel - nada pra enviar"
+    }
+    else {
+        $commitMsg = "Atualizacao automatica {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm")
+        & git commit -m $commitMsg 2>&1 | Out-Null
+        $pushResult = & git push origin main 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Log "AVISO: git push falhou (painel local esta ok, so nao sincronizou com o GitHub agora) - $($pushResult -join ' | ')"
+        }
+        else {
+            Write-Log "OK: Enviado pro GitHub - $commitMsg"
+        }
+    }
+}
+catch {
+    Write-Log "AVISO: erro ao enviar pro GitHub (painel local esta ok) - $($_.Exception.Message)"
+}
+finally { Pop-Location }
+
 Write-Log "=== Atualizacao do Fluxo de Exportacao concluida com sucesso ==="
