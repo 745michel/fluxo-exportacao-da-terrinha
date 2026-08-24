@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-08-24T18:41:23.130Z",
+  "newInvoices": [
+    "20170874",
+    "20170873"
+  ],
+  "changedInvoices": [
+    "20170585",
+    "20170781",
+    "20170818",
+    "20170850",
+    "20170865",
+    "20170870",
+    "20170863",
+    "20170871"
+  ],
+  "itemChanges": [
+    {
+      "invoice": "20170585",
+      "produto": "TAPIOCA DA TERRINHA EXP 500G - CX 24",
+      "type": "quantidade",
+      "oldVolume": 1580,
+      "newVolume": 1950
+    },
+    {
+      "invoice": "20170818",
+      "produto": "MOLHO ARABE COM PIMENTA DA TERRINHA 150 ML - CX 12 / ARABIC PEPPER SAUCE DA TERRINHA 150 ML - BX 12",
+      "type": "quantidade",
+      "oldVolume": 10,
+      "newVolume": 0
+    },
+    {
+      "invoice": "20170850",
+      "produto": "FAROFA DE MANDIOCA DA TERRINHA 400 G EXP FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 1500
+    },
+    {
+      "invoice": "20170865",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24 / EXP TAPIOCA FLOUR DA TERRINHA (VM) 500 G - BX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 70
+    },
+    {
+      "invoice": "20170863",
+      "produto": "BOLACHA DA TERRINHA COQUINHO 250 g - FD 20 / COCONUT COOKIE DA TERRINHA 250 G - PK 20",
+      "type": "quantidade",
+      "oldVolume": 1000,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170871",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24 / EXP TAPIOCA FLOUR DA TERRINHA (VM) 500 G - BX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 366
+    }
+  ],
+  "dateChanges": [
+    {
+      "invoice": "20170781",
+      "oldDate": "2026-05-04T00:00:00.000Z",
+      "newDate": "2026-04-27T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170870",
+      "oldDate": "2026-09-10T00:00:00.000Z",
+      "newDate": "2026-09-08T00:00:00.000Z"
+    }
+  ]
+}

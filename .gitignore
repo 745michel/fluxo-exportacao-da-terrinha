@@ -1,0 +1,5 @@
+# Logs de execução da tarefa agendada - não tem valor em histórico de versão
+automation/logs/
+
+# CSVs intermediários extraídos do Excel a cada rodada - sempre regenerados, não é a fonte real
+data/raw/
