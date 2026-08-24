@@ -447,6 +447,9 @@ function main() {
   html = html.replace('__ORDERS_JSON__', () => JSON.stringify(orders));
   html = html.replace('__CHANGES_JSON__', () => JSON.stringify(changes));
   fs.writeFileSync(OUTPUT_HTML, html, 'utf8');
+  // Copia idêntica como index.html: é o nome que o Cloudflare Pages (e qualquer host estático)
+  // serve automaticamente na raiz do site - sem ela, abrir o link publicado não mostraria nada.
+  fs.writeFileSync(path.join(ROOT, 'index.html'), html, 'utf8');
 
   console.log('OK: %d pedidos, %d linhas de SKU, %d pedidos novos, %d pedidos alterados, %d itens novos/alterados',
     orders.length, skuRows.length, changes.newInvoices.length, changes.changedInvoices.length, changes.itemChanges.length);
