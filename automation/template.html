@@ -1951,30 +1951,30 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'validate-btn';
-    var alreadyPending = !!getPendingValidations()[invoice];
-    if (alreadyPending) {
-      btn.textContent = 'Validado ✓';
-      btn.disabled = true;
-      btn.title = 'Aplicado na próxima atualização automática (8:10/15:30)';
-    } else {
-      btn.textContent = 'Validar';
-      btn.title = 'Marca esta alteração como revisada — some na próxima atualização automática';
-      btn.addEventListener('click', function (ev) {
-        ev.stopPropagation();
-        btn.disabled = true;
-        btn.textContent = 'Salvando…';
-        downloadValidationMarker(invoice).then(function (ok) {
-          if (ok) {
-            markValidationPending(invoice);
-            btn.textContent = 'Validado ✓';
-            btn.title = 'Aplicado na próxima atualização automática (8:10/15:30)';
-          } else {
-            btn.disabled = false;
-            btn.textContent = 'Validar';
-          }
-        });
-      });
+    // Nunca fica travado como "já validado pra sempre" de propósito: o download pode não ter
+    // chegado de verdade na pasta certa (browser configurado pra perguntar onde salvar, etc.) e
+    // o botão desabilitado escondia isso - clicar de novo é sempre permitido, só pra garantir.
+    function setLabel(pending) {
+      btn.textContent = pending ? 'Validado ✓ (clique p/ reenviar)' : 'Validar';
+      btn.title = pending
+        ? 'Marcado como revisado. Se o destaque não sumir na próxima atualização, clique de novo.'
+        : 'Marca esta alteração como revisada — some na próxima atualização automática';
     }
+    setLabel(!!getPendingValidations()[invoice]);
+    btn.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      btn.disabled = true;
+      btn.textContent = 'Salvando…';
+      downloadValidationMarker(invoice).then(function (ok) {
+        btn.disabled = false;
+        if (ok) {
+          markValidationPending(invoice);
+          setLabel(true);
+        } else {
+          setLabel(false);
+        }
+      });
+    });
     return btn;
   }
   function getItemChange(invoice, produto) {
