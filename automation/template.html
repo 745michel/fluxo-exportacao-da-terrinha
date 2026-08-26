@@ -1899,6 +1899,29 @@
     input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tryUnlock(); });
   }
 
+  // Mesma senha da aba Análise, de propósito (26/08/2026): o botão "Validar" ficava visível e
+  // clicável pra qualquer pessoa com o link público, mesmo só fazendo efeito de verdade neste
+  // computador - agora exige a senha uma vez por sessão do navegador antes do primeiro clique.
+  function requireValidationPassword() {
+    try {
+      if (sessionStorage.getItem('validacaoUnlocked') === '1') return Promise.resolve(true);
+    } catch (e) {}
+    if (!window.crypto || !window.crypto.subtle) {
+      window.alert('Este navegador não permite verificar a senha aqui (precisa de conexão https).');
+      return Promise.resolve(false);
+    }
+    var val = window.prompt('Digite a senha para validar esta alteração:');
+    if (val === null) return Promise.resolve(false);
+    return sha256Hex(val).then(function (hash) {
+      if (hash === ANALISE_PASSWORD_HASH) {
+        try { sessionStorage.setItem('validacaoUnlocked', '1'); } catch (e) {}
+        return true;
+      }
+      window.alert('Senha incorreta.');
+      return false;
+    });
+  }
+
   /* ---------- Tabs ---------- */
   function setupTabs() {
     var btns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
@@ -2025,16 +2048,19 @@
     setLabel(!!getPendingValidations()[invoice]);
     btn.addEventListener('click', function (ev) {
       ev.stopPropagation();
-      btn.disabled = true;
-      btn.textContent = 'Salvando…';
-      downloadValidationMarker(invoice).then(function (ok) {
-        btn.disabled = false;
-        if (ok) {
-          markValidationPending(invoice);
-          setLabel(true);
-        } else {
-          setLabel(false);
-        }
+      requireValidationPassword().then(function (allowed) {
+        if (!allowed) return;
+        btn.disabled = true;
+        btn.textContent = 'Salvando…';
+        downloadValidationMarker(invoice).then(function (ok) {
+          btn.disabled = false;
+          if (ok) {
+            markValidationPending(invoice);
+            setLabel(true);
+          } else {
+            setLabel(false);
+          }
+        });
       });
     });
     return btn;
