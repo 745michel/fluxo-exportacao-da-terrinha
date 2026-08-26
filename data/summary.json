@@ -1,10 +1,10 @@
 {
   "totals": {
     "shipments": 408,
-    "volume": 458595
+    "volume": 614027
   },
   "byYear": {
-    "2024": 155432,
+    "2024": 310864,
     "2025": 168472,
     "2026": 134691
   },
@@ -66,7 +66,7 @@
     },
     {
       "month": "2024-12",
-      "volume": 16289,
+      "volume": 171721,
       "shipments": 11
     },
     {
@@ -179,95 +179,95 @@
     {
       "pais": "PORTUGAL",
       "volume": 257417,
-      "share": 0.5613913035892649
+      "share": 0.4192691451969653
+    },
+    {
+      "pais": "JAPÃO",
+      "volume": 171211,
+      "share": 0.27886071867171797
     },
     {
       "pais": "EUA",
       "volume": 29205,
-      "share": 0.06369211443426223
+      "share": 0.047567780626288754
     },
     {
       "pais": "IRLANDA",
       "volume": 18813,
-      "share": 0.04102858239519861
+      "share": 0.030641761921669928
     },
     {
       "pais": "ITÁLIA",
       "volume": 17404,
-      "share": 0.03795574592069508
-    },
-    {
-      "pais": "JAPÃO",
-      "volume": 15779,
-      "share": 0.03441184296039116
+      "share": 0.028346846568051
     },
     {
       "pais": "MÉXICO",
       "volume": 15600,
-      "share": 0.034021468418917684
+      "share": 0.025408573113169134
     },
     {
       "pais": "PARAGUAI",
       "volume": 13890,
-      "share": 0.030292192072997857
+      "share": 0.022623402598840978
     },
     {
       "pais": "HOLANDA",
       "volume": 11613,
-      "share": 0.02532636620185199
+      "share": 0.01891472817713033
     },
     {
       "pais": "OUTROS",
       "volume": 78813,
-      "share": 0.17188038400642047,
+      "share": 0.1283670431261666,
       "isOther": true
     }
   ],
   "topClients": [
     {
+      "cliente": "TRADE",
+      "volume": 167368,
+      "share": 0.27257433305050105
+    },
+    {
+      "cliente": "DIRETA",
+      "volume": 143496,
+      "share": 0.2336965638318836
+    },
+    {
       "cliente": "GLEZ",
-      "volume": 178128,
-      "share": 0.38842115592189186
+      "volume": 111934,
+      "share": 0.182294915370171
     },
     {
       "cliente": "MALOCA",
-      "volume": 53675,
-      "share": 0.11704227041289154
-    },
-    {
-      "cliente": "EB EXPRESS",
-      "volume": 20345,
-      "share": 0.04436376323335405
-    },
-    {
-      "cliente": "MC IRLANDA",
-      "volume": 18813,
-      "share": 0.041023124979557124
-    },
-    {
-      "cliente": "FRESH TROPICAL",
-      "volume": 15757,
-      "share": 0.03435929305814499
+      "volume": 42404,
+      "share": 0.06905885246088526
     },
     {
       "cliente": "VISALIA",
-      "volume": 12248,
-      "share": 0.02670766144419368
+      "volume": 16930,
+      "share": 0.027572077449362974
     },
     {
-      "cliente": "SUCOS DO BRASIL",
-      "volume": 10797,
-      "share": 0.02354364962548654
+      "cliente": "MC IRLANDA",
+      "volume": 13351,
+      "share": 0.0217433435337534
     },
     {
-      "cliente": "PARANA TRADING COMERCIO",
-      "volume": 10553,
-      "share": 0.02301158974694447
+      "cliente": "FRESH TROPICAL",
+      "volume": 10066,
+      "share": 0.016393415924706892
+    },
+    {
+      "cliente": "EB EXPRESS",
+      "volume": 9005,
+      "share": 0.014665478879593243
     },
     {
       "cliente": "OUTROS",
-      "volume": 138279,
-      "share": 0.3015274915775357,
+      "volume": 99473,
+      "share": 0.16200101949914256,
       "isOther": true
     }
   ],
@@ -332,15 +332,15 @@
   "byTipo": [
     {
       "tipo": "DIRETA",
-      "volume": 151032,
-      "share": 0.9180551081069581
+      "volume": 272571,
+      "share": 0.8990905882314134
     },
     {
       "tipo": "TRADE",
-      "volume": 13481,
-      "share": 0.08194489189304188
+      "volume": 30592,
+      "share": 0.10090941176858653
     }
   ],
   "countryCount": 30,
-  "clientCount": 103
+  "clientCount": 74
 }

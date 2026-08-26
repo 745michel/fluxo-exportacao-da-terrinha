@@ -1,7 +1,8 @@
 {
-  "generatedAt": "2026-08-26T17:12:59.759Z",
+  "generatedAt": "2026-08-26T18:27:58.761Z",
   "newInvoices": [],
   "changedInvoices": [
+    "20170576",
     "20170585",
     "20170781",
     "20170818",
@@ -9,6 +10,13 @@
     "20170865"
   ],
   "itemChanges": [
+    {
+      "invoice": "20170576",
+      "produto": "",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 155432
+    },
     {
       "invoice": "20170585",
       "produto": "TAPIOCA DA TERRINHA EXP 500G - CX 24",
