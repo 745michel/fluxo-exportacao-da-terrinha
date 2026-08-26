@@ -123,8 +123,17 @@
   }
   .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tab-btn.active { background: var(--accent); color: var(--accent-ink); }
+  .gate-btn {
+    appearance: none; border: none; background: var(--accent); color: var(--accent-ink);
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    padding: 10px 18px; border-radius: 7px; cursor: pointer;
+  }
+  .gate-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tab-panel { display: none; flex-direction: column; gap: 24px; }
   .tab-panel.active { display: flex; }
+  .analise-gate { display: none; max-width: 360px; margin: 60px auto; text-align: center; }
+  #panel-analise.analise-locked > *:not(#analiseGate) { display: none !important; }
+  #panel-analise.analise-locked .analise-gate { display: block; }
 
   /* KPI row */
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -510,7 +519,16 @@
     </div>
   </div>
 
-  <div class="tab-panel" id="panel-analise">
+  <div class="tab-panel analise-locked" id="panel-analise">
+    <div class="analise-gate" id="analiseGate">
+      <div class="card-title" style="margin-bottom:8px;">Área restrita</div>
+      <div class="card-desc" style="margin-bottom:16px;">Digite a senha para ver a análise.</div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <input type="password" id="analisePasswordInput" class="filter-input" placeholder="Senha" style="max-width:220px; flex:none;" autocomplete="current-password">
+        <button type="button" id="analisePasswordBtn" class="gate-btn">Entrar</button>
+      </div>
+      <div id="analisePasswordError" style="color:var(--bad); font-size:12px; margin-top:10px; display:none;">Senha incorreta.</div>
+    </div>
     <div class="filter-bar">
       <select class="filter-select" id="analiseYear">
         <option value="all">Todos os anos (2024–2026)</option>
@@ -1837,6 +1855,50 @@
     document.getElementById('analiseYearNote').textContent = fmt(data.totals.shipments) + ' pedidos · ' + fmt(data.totals.volume) + ' cx';
   }
 
+  /* ---------- Senha da aba Análise ----------
+     Cortina simples, não é segurança de verdade: o painel é um site estático publicado no
+     GitHub Pages (repositório público), e todo o dado usado aqui já está carregado no mesmo
+     HTML pra aba Pedidos funcionar. Só guarda o hash SHA-256 da senha, nunca o texto puro -
+     decisão explícita do usuário, ciente da limitação (17/08 a 26/08/2026). */
+  var ANALISE_PASSWORD_HASH = '2cdb977fdca2dd2c707674e5deb0a4a392d8bc1ec7fd2b4dff121053b41a575e';
+  function sha256Hex(text) {
+    var enc = new TextEncoder().encode(text);
+    return crypto.subtle.digest('SHA-256', enc).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function unlockAnalise() {
+    document.getElementById('panel-analise').classList.remove('analise-locked');
+    try { sessionStorage.setItem('analiseUnlocked', '1'); } catch (e) {}
+  }
+  function setupAnaliseGate() {
+    var input = document.getElementById('analisePasswordInput');
+    var btn = document.getElementById('analisePasswordBtn');
+    var err = document.getElementById('analisePasswordError');
+    try {
+      if (sessionStorage.getItem('analiseUnlocked') === '1') { unlockAnalise(); return; }
+    } catch (e) {}
+    if (!window.crypto || !window.crypto.subtle) {
+      err.textContent = 'Este navegador não permite verificar a senha aqui (precisa de conexão https).';
+      err.style.display = 'block';
+      return;
+    }
+    function tryUnlock() {
+      var val = input.value;
+      sha256Hex(val).then(function (hash) {
+        if (hash === ANALISE_PASSWORD_HASH) { unlockAnalise(); }
+        else {
+          err.textContent = 'Senha incorreta.';
+          err.style.display = 'block';
+          input.value = '';
+          input.focus();
+        }
+      });
+    }
+    btn.addEventListener('click', tryUnlock);
+    input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tryUnlock(); });
+  }
+
   /* ---------- Tabs ---------- */
   function setupTabs() {
     var btns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
@@ -2327,6 +2389,7 @@
   }
 
   setupTabs();
+  setupAnaliseGate();
 
   var MONTH_FULL = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   var now = new Date();
