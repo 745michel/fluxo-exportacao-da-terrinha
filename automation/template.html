@@ -1861,6 +1861,9 @@
      HTML pra aba Pedidos funcionar. Só guarda o hash SHA-256 da senha, nunca o texto puro -
      decisão explícita do usuário, ciente da limitação (17/08 a 26/08/2026). */
   var ANALISE_PASSWORD_HASH = '2cdb977fdca2dd2c707674e5deb0a4a392d8bc1ec7fd2b4dff121053b41a575e';
+  // Senha separada da aba Análise de propósito (26/08/2026) - quem valida pedidos não precisa
+  // necessariamente ver a aba de análise, e vice-versa.
+  var VALIDACAO_PASSWORD_HASH = '2b45feb2351ccc2e9ed8992f6912199bdabb0d36497592059048ba77952a0299';
   function sha256Hex(text) {
     var enc = new TextEncoder().encode(text);
     return crypto.subtle.digest('SHA-256', enc).then(function (buf) {
@@ -1899,9 +1902,9 @@
     input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tryUnlock(); });
   }
 
-  // Mesma senha da aba Análise, de propósito (26/08/2026): o botão "Validar" ficava visível e
+  // Senha própria, diferente da aba Análise (26/08/2026): o botão "Validar" ficava visível e
   // clicável pra qualquer pessoa com o link público, mesmo só fazendo efeito de verdade neste
-  // computador - agora exige a senha uma vez por sessão do navegador antes do primeiro clique.
+  // computador - agora exige senha uma vez por sessão do navegador antes do primeiro clique.
   function requireValidationPassword() {
     try {
       if (sessionStorage.getItem('validacaoUnlocked') === '1') return Promise.resolve(true);
@@ -1913,7 +1916,7 @@
     var val = window.prompt('Digite a senha para validar esta alteração:');
     if (val === null) return Promise.resolve(false);
     return sha256Hex(val).then(function (hash) {
-      if (hash === ANALISE_PASSWORD_HASH) {
+      if (hash === VALIDACAO_PASSWORD_HASH) {
         try { sessionStorage.setItem('validacaoUnlocked', '1'); } catch (e) {}
         return true;
       }
