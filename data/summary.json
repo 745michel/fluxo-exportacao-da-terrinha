@@ -1,23 +1,23 @@
 {
   "totals": {
-    "shipments": 408,
-    "volume": 614020
+    "shipments": 411,
+    "volume": 460906
   },
   "byYear": {
-    "2024": 310864,
+    "2024": 155264,
     "2025": 168472,
-    "2026": 134684
+    "2026": 137170
   },
   "monthlySeries": [
     {
       "month": "2024-01",
-      "volume": 7949,
-      "shipments": 7
+      "volume": 1996,
+      "shipments": 1
     },
     {
       "month": "2024-02",
-      "volume": 8967,
-      "shipments": 6
+      "volume": 8271,
+      "shipments": 5
     },
     {
       "month": "2024-03",
@@ -56,17 +56,17 @@
     },
     {
       "month": "2024-10",
-      "volume": 15555,
-      "shipments": 12
+      "volume": 16704,
+      "shipments": 13
     },
     {
       "month": "2024-11",
-      "volume": 13028,
-      "shipments": 10
+      "volume": 13248,
+      "shipments": 11
     },
     {
       "month": "2024-12",
-      "volume": 171721,
+      "volume": 16121,
       "shipments": 11
     },
     {
@@ -171,103 +171,103 @@
     },
     {
       "month": "2026-09",
-      "volume": 13647,
-      "shipments": 12
+      "volume": 16133,
+      "shipments": 15
     }
   ],
   "topCountries": [
     {
       "pais": "PORTUGAL",
-      "volume": 257417,
-      "share": 0.41927392545756315
-    },
-    {
-      "pais": "JAPÃO",
-      "volume": 171211,
-      "share": 0.2788638980778847
+      "volume": 255037,
+      "share": 0.5598257109303831
     },
     {
       "pais": "EUA",
-      "volume": 29205,
-      "share": 0.047568322966191554
+      "volume": 30574,
+      "share": 0.06711226718470471
     },
     {
       "pais": "IRLANDA",
-      "volume": 18813,
-      "share": 0.030642111281046453
+      "volume": 19313,
+      "share": 0.0423935113540329
     },
     {
       "pais": "ITÁLIA",
-      "volume": 17404,
-      "share": 0.02834716976215024
+      "volume": 16255,
+      "share": 0.035680967589696314
     },
     {
       "pais": "MÉXICO",
       "volume": 15600,
-      "share": 0.0254088628067998
+      "share": 0.03424319251917948
+    },
+    {
+      "pais": "JAPÃO",
+      "volume": 14881,
+      "share": 0.032664932556276276
     },
     {
       "pais": "PARAGUAI",
       "volume": 13890,
-      "share": 0.0226236605375929
+      "share": 0.03048961180073096
     },
     {
-      "pais": "HOLANDA",
-      "volume": 11613,
-      "share": 0.01891494383175424
+      "pais": "ALEMANHA",
+      "volume": 11499,
+      "share": 0.025241184024233643
     },
     {
       "pais": "OUTROS",
-      "volume": 78806,
-      "share": 0.128357105279017,
+      "volume": 78516,
+      "share": 0.17234862204076257,
       "isOther": true
     }
   ],
   "topClients": [
     {
-      "cliente": "TRADE",
-      "volume": 167368,
-      "share": 0.27257744047425164
-    },
-    {
       "cliente": "DIRETA",
-      "volume": 143496,
-      "share": 0.23369922803817464
+      "volume": 143521,
+      "share": 0.3113888732192681
     },
     {
       "cliente": "GLEZ",
-      "volume": 111934,
-      "share": 0.1822969935832709
+      "volume": 114499,
+      "share": 0.24842158704811826
     },
     {
       "cliente": "MALOCA",
       "volume": 42404,
-      "share": 0.06905963975114818
+      "share": 0.09200140592658806
     },
     {
       "cliente": "VISALIA",
-      "volume": 16930,
-      "share": 0.027572391778769422
+      "volume": 17080,
+      "share": 0.037057447722529106
     },
     {
       "cliente": "MC IRLANDA",
-      "volume": 13351,
-      "share": 0.021743591413960456
+      "volume": 13851,
+      "share": 0.03005168081995027
+    },
+    {
+      "cliente": "TRADE",
+      "volume": 11743,
+      "share": 0.02547808012913696
     },
     {
       "cliente": "FRESH TROPICAL",
       "volume": 10066,
-      "share": 0.016393602814240578
+      "share": 0.021839594190572482
     },
     {
       "cliente": "EB EXPRESS",
       "volume": 9005,
-      "share": 0.014665646070160581
+      "share": 0.019537606366591017
     },
     {
       "cliente": "OUTROS",
-      "volume": 99466,
-      "share": 0.16199146607602358,
+      "volume": 98737,
+      "share": 0.21422372457724567,
       "isOther": true
     }
   ],
@@ -275,72 +275,72 @@
     {
       "produto": "TAPIOCA DA TERRINHA EXP 500G",
       "volume": 61691,
-      "share": 0.13452379913996879
+      "share": 0.13384724867977418
     },
     {
       "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G",
-      "volume": 56853,
-      "share": 0.12397402461468682
+      "volume": 58853,
+      "share": 0.12768981093758813
     },
     {
       "produto": "TAPIOCA DA TERRINHA 500G",
       "volume": 34456,
-      "share": 0.07513497954591049
+      "share": 0.0747571088247929
     },
     {
       "produto": "TAPIOCA DA TERRINHA VM EXP 500G",
       "volume": 32518,
-      "share": 0.07090896403743666
+      "share": 0.07055234689936776
     },
     {
       "produto": "FAROFA PRONTA DA TERRINHA TRADICIONAL 400 G",
       "volume": 31722,
-      "share": 0.0691732012176507
+      "share": 0.06882531362143257
     },
     {
       "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500G",
       "volume": 26605,
-      "share": 0.058015037462820655
+      "share": 0.05772326678324864
     },
     {
       "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G",
-      "volume": 22135,
-      "share": 0.04826772615070608
+      "volume": 22285,
+      "share": 0.04835042286279632
     },
     {
       "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G",
       "volume": 14136,
-      "share": 0.03082505429710328
+      "share": 0.030670028161924556
     },
     {
       "produto": "FLOCAO DE MILHO DA TERRINHA 400G",
       "volume": 13938,
-      "share": 0.030393294198714314
+      "share": 0.030240439482237157
     },
     {
       "produto": "TAPIOCA DA TERRINHA 1 KG",
-      "volume": 12871,
-      "share": 0.02806658700184043
+      "volume": 13221,
+      "share": 0.02868480774821764
     },
     {
       "produto": "OUTROS",
-      "volume": 151663,
-      "share": 0.3307173323331618,
+      "volume": 151481,
+      "share": 0.3286592059986201,
       "isOther": true
     }
   ],
   "byTipo": [
     {
       "tipo": "DIRETA",
-      "volume": 272564,
-      "share": 0.8990882581905025
+      "volume": 274980,
+      "share": 0.899680017798601
     },
     {
       "tipo": "TRADE",
-      "volume": 30592,
-      "share": 0.10091174180949743
+      "volume": 30662,
+      "share": 0.10031998220139902
     }
   ],
   "countryCount": 30,
-  "clientCount": 74
+  "clientCount": 71
 }

@@ -30,15 +30,35 @@ function Escape-CsvField {
     return $Value
 }
 
+# UsedRange.Rows.Count NAO e confiavel: uma formatacao acidental numa coluna inteira (ex.: alguem
+# selecionou a coluna toda e pintou/formatou sem querer) faz o Excel "achar" que a planilha tem
+# dado ate a ULTIMA linha possivel (1.048.576) mesmo com os dados reais só nas primeiras centenas
+# de linhas - descoberto em 31/08/2026 na aba de 2024 (38 milhoes de celulas "usadas"), o que
+# fazia a extracao celula-por-celula travar por horas sem nunca terminar. Cells.End(xlUp) a partir
+# da ultima linha do sheet e uma chamada COM so (rapida, o Excel resolve internamente), não um
+# loop célula a célula - acha a última linha com dado de verdade na coluna informada.
+$XL_UP = -4162
+function Get-RealLastRow {
+    param($Sheet, [int]$StartRow, [int]$Col)
+    $bottomCell = $Sheet.Cells.Item($Sheet.Rows.Count, $Col)
+    $lastRow = $bottomCell.End($XL_UP).Row
+    if ($lastRow -lt $StartRow) { return $StartRow }
+    return $lastRow
+}
+
 function Export-SheetToCsv {
     param($Sheet, [string]$OutPath)
     # Range.Text só é válido célula a célula via COM (não existe em bloco para um range com mais
     # de uma célula) - por isso a leitura é feita uma célula de cada vez, não via array 2D.
     $used = $Sheet.UsedRange
-    $rows = $used.Rows.Count
-    $cols = $used.Columns.Count
     $startRow = $used.Row
     $startCol = $used.Column
+    $cols = $used.Columns.Count
+    $realLastRow = Get-RealLastRow -Sheet $Sheet -StartRow $startRow -Col $startCol
+    $rows = $realLastRow - $startRow + 1
+    if ($rows -ne $used.Rows.Count) {
+        Write-Host ("AVISO: UsedRange da aba '" + $Sheet.Name + "' dizia " + $used.Rows.Count + " linhas, mas a ultima linha com dado de verdade e a " + $realLastRow + " - usando " + $rows + " linhas reais.")
+    }
     $cellsObj = $Sheet.Cells
 
     $sb = New-Object System.Text.StringBuilder
@@ -56,15 +76,30 @@ function Export-SheetToCsv {
 function Export-ColumnToCsv {
     param($Sheet, [int]$ColIndex, [string]$OutPath)
     $used = $Sheet.UsedRange
-    $rows = $used.Rows.Count
     $startRow = $used.Row
     $startCol = $used.Column
+    $realLastRow = Get-RealLastRow -Sheet $Sheet -StartRow $startRow -Col $startCol
+    $rows = $realLastRow - $startRow + 1
     $sb = New-Object System.Text.StringBuilder
     for ($r = 0; $r -lt $rows; $r++) {
         $cell = $Sheet.Cells.Item($startRow + $r, $ColIndex)
         [void]$sb.AppendLine($r.ToString() + ',' + (Escape-CsvField $cell.Text))
     }
     [System.IO.File]::WriteAllText($OutPath, $sb.ToString(), [System.Text.Encoding]::UTF8)
+}
+
+# Busca a aba pelo nome ignorando espacos duplicados/extras - a aba de 2024 mudou de "Programação
+# Exportações 2024" pra "Programação  Exportações 2024" (dois espacos) numa edicao recente da
+# planilha (28/08/2026), e o Item($nome) exato quebrou com "Indice invalido". Comparar normalizado
+# evita quebrar de novo se isso mudar de novo no futuro.
+function Find-SheetByNormalizedName {
+    param($Workbook, [string]$TargetName)
+    $normalizedTarget = ($TargetName -replace '\s+', ' ').Trim()
+    foreach ($sheet in $Workbook.Sheets) {
+        $normalizedActual = ($sheet.Name -replace '\s+', ' ').Trim()
+        if ($normalizedActual -eq $normalizedTarget) { return $sheet }
+    }
+    return $null
 }
 
 $excel = New-Object -ComObject Excel.Application
@@ -80,12 +115,15 @@ try {
         2026 = "Programação Exportações 2026"
     }
 
+    $sheets = @{}
     foreach ($year in $sheetMap.Keys) {
         $sheetName = $sheetMap[$year]
-        $sheet = $workbook.Sheets.Item($sheetName)
+        $sheet = Find-SheetByNormalizedName -Workbook $workbook -TargetName $sheetName
+        if (-not $sheet) { throw "Aba nao encontrada (nem normalizando espacos): '$sheetName'" }
+        $sheets[$year] = $sheet
         $outPath = Join-Path $rawDir "Programação_Exportações_$year.csv"
         Export-SheetToCsv -Sheet $sheet -OutPath $outPath
-        Write-Host "Exportado: $sheetName -> $outPath"
+        Write-Host "Exportado: $($sheet.Name) -> $outPath"
     }
 
     # Coluna "Código" da aba 2026: offset fixo 6 (0-based) a partir da primeira coluna usada -
@@ -93,7 +131,7 @@ try {
     # real (Cliente=0, Tipo=1, Pedido=2, Invoice=3, Data=4, Volume=5, Codigo=6, Descricao=7, ...).
     # Extraida separada da aba inteira porque so aqui .Text detecta as celulas com erro de
     # formula (#N/A etc.) que o build.js precisa descartar.
-    $sheet2026 = $workbook.Sheets.Item($sheetMap[2026])
+    $sheet2026 = $sheets[2026]
     $used = $sheet2026.UsedRange
     $codigoCol = $used.Column + 6
     Export-ColumnToCsv -Sheet $sheet2026 -ColIndex $codigoCol -OutPath (Join-Path $rawDir "codigo_2026.csv")
