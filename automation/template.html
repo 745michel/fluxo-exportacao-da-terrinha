@@ -1904,11 +1904,9 @@
 
   // Senha própria, diferente da aba Análise (26/08/2026): o botão "Validar" ficava visível e
   // clicável pra qualquer pessoa com o link público, mesmo só fazendo efeito de verdade neste
-  // computador - agora exige senha uma vez por sessão do navegador antes do primeiro clique.
+  // computador - exige senha em TODO clique, sem cache de sessão (31/08/2026: destravar uma vez
+  // por sessão deixava validar sem senha depois do primeiro acerto, o que não pode acontecer).
   function requireValidationPassword() {
-    try {
-      if (sessionStorage.getItem('validacaoUnlocked') === '1') return Promise.resolve(true);
-    } catch (e) {}
     if (!window.crypto || !window.crypto.subtle) {
       window.alert('Este navegador não permite verificar a senha aqui (precisa de conexão https).');
       return Promise.resolve(false);
@@ -1916,10 +1914,7 @@
     var val = window.prompt('Digite a senha para validar esta alteração:');
     if (val === null) return Promise.resolve(false);
     return sha256Hex(val).then(function (hash) {
-      if (hash === VALIDACAO_PASSWORD_HASH) {
-        try { sessionStorage.setItem('validacaoUnlocked', '1'); } catch (e) {}
-        return true;
-      }
+      if (hash === VALIDACAO_PASSWORD_HASH) return true;
       window.alert('Senha incorreta.');
       return false;
     });

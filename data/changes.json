@@ -1,8 +1,6 @@
 {
-  "generatedAt": "2026-08-31T12:45:11.303Z",
+  "generatedAt": "2026-08-31T12:49:06.472Z",
   "newInvoices": [
-    "20170877",
-    "20170876",
     "20170878"
   ],
   "changedInvoices": [
@@ -18,9 +16,7 @@
     "20170818",
     "20170850",
     "20170865",
-    "20170860",
-    "20170863",
-    "20170866"
+    "20170863"
   ],
   "itemChanges": [
     {
@@ -87,25 +83,11 @@
       "newVolume": 70
     },
     {
-      "invoice": "20170860",
-      "produto": "FARINHA MILHO AMARELA DA TERRINHA 500 G FD10 / YELLOW CORN FLOUR DA TERRINHA 500 G - PK 10",
-      "type": "quantidade",
-      "oldVolume": 144,
-      "newVolume": 110
-    },
-    {
       "invoice": "20170863",
       "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24 / EXP TAPIOCA FLOUR DA TERRINHA (VM) 500 G - BX 24",
       "type": "quantidade",
       "oldVolume": 1800,
       "newVolume": 1850
-    },
-    {
-      "invoice": "20170866",
-      "produto": "TAPIOCA DA TERRINHA 70G (LISA) - CX 100 / TAPIOCA FLOUR DA TERRINHA 70G (SMOOTH) - BX 100",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 180
     }
   ],
   "dateChanges": [
