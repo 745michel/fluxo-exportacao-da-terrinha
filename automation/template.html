@@ -191,6 +191,9 @@
     .hbar-fill { transition: width 0.6s cubic-bezier(.2,.7,.2,1); }
   }
   .hbar-fill.is-other { background: var(--other); }
+  .hbar-row.is-total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .hbar-row.is-total .hbar-label, .hbar-row.is-total .hbar-value { font-weight: 700; color: var(--ink); }
+  .hbar-fill.is-total { background: var(--ink-2); }
   .hbar-value { width: 82px; flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink); }
   .hbar-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -1301,31 +1304,36 @@
   // valueFmt opcional (01/09/2026): por padrão formata em caixas, igual sempre foi - a aba
   // Faturamento reaproveita esta mesma função passando um formatador em R$ em vez de duplicar
   // tudo isso só pra trocar a unidade exibida.
+  // Itens com isTotal:true (01/09/2026) viram uma linha "Total" destacada no fim da lista, com
+  // barra sempre em 100% (não entra no cálculo de maxV, senão todas as outras barras encolheriam
+  // pra caber ao lado da barra do total, que é sempre a maior de todas por definição).
   function renderHBarList(containerId, items, labelKey, valueFmt) {
     valueFmt = valueFmt || function (v) { return fmt(v) + ' cx'; };
     var container = document.getElementById(containerId);
     container.innerHTML = '';
     var list = document.createElement('div');
     list.className = 'hbar-list';
-    var maxV = Math.max.apply(null, items.map(function (d) { return d.volume; }));
+    var scaleItems = items.filter(function (d) { return !d.isTotal; });
+    var maxV = Math.max.apply(null, (scaleItems.length ? scaleItems : items).map(function (d) { return d.volume; }));
     var animFills = [];
 
     items.forEach(function (d) {
       var row = document.createElement('div');
-      row.className = 'hbar-row';
+      row.className = 'hbar-row' + (d.isTotal ? ' is-total' : '');
 
       var label = document.createElement('div');
       label.className = 'hbar-label';
-      if (labelKey === 'pais' && !d.isOther) label.appendChild(buildCountryLabel(d[labelKey]));
+      if (d.isTotal) label.textContent = 'Total';
+      else if (labelKey === 'pais' && !d.isOther) label.appendChild(buildCountryLabel(d[labelKey]));
       else label.textContent = titleCase(d[labelKey]);
-      label.title = titleCase(d[labelKey]);
+      label.title = d.isTotal ? 'Total' : titleCase(d[labelKey]);
 
       var track = document.createElement('div');
       track.className = 'hbar-track';
       var fill = document.createElement('div');
-      fill.className = 'hbar-fill' + (d.isOther ? ' is-other' : '');
+      fill.className = 'hbar-fill' + (d.isOther ? ' is-other' : '') + (d.isTotal ? ' is-total' : '');
       fill.style.width = '0%';
-      animFills.push({ el: fill, width: Math.max((d.volume / maxV) * 100, 2) + '%' });
+      animFills.push({ el: fill, width: (d.isTotal ? 100 : Math.max((d.volume / maxV) * 100, 2)) + '%' });
       track.appendChild(fill);
 
       var value = document.createElement('div');
@@ -1338,10 +1346,9 @@
       list.appendChild(row);
 
       row.addEventListener('pointermove', function (evt) {
-        showTooltip(evt.clientX, evt.clientY, [
-          { text: titleCase(d[labelKey]) },
-          { strong: valueFmt(d.volume), rest: '· ' + pct(d.share) }
-        ]);
+        var lines = [{ text: d.isTotal ? 'Total' : titleCase(d[labelKey]) }];
+        lines.push(d.isTotal ? { strong: valueFmt(d.volume) } : { strong: valueFmt(d.volume), rest: '· ' + pct(d.share) });
+        showTooltip(evt.clientX, evt.clientY, lines);
       });
       row.addEventListener('pointerleave', hideTooltip);
     });
@@ -2299,12 +2306,15 @@
     lastFaturamentoTrendSeries = data.monthlySeries;
     updateFaturamentoTrendSection();
     renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, yearFilter, compareYearsFaturamento);
-    renderHBarList('faturamentoCountryChart', data.topCountries, 'pais', fmtBRL);
-    renderHBarList('faturamentoClientChart', data.topClients, 'cliente', fmtBRL);
 
     var countryTotal = data.topCountries.reduce(function (a, c) { return a + c.volume; }, 0);
     var clientTotal = data.topClients.reduce(function (a, c) { return a + c.volume; }, 0);
     var yearGrandTotal = Object.keys(BY_YEAR_REVENUE).reduce(function (a, y) { return a + BY_YEAR_REVENUE[y]; }, 0);
+
+    var countryItems = data.topCountries.concat(countryTotal ? [{ pais: 'TOTAL', volume: countryTotal, isTotal: true }] : []);
+    var clientItems = data.topClients.concat(clientTotal ? [{ cliente: 'TOTAL', volume: clientTotal, isTotal: true }] : []);
+    renderHBarList('faturamentoCountryChart', countryItems, 'pais', fmtBRL);
+    renderHBarList('faturamentoClientChart', clientItems, 'cliente', fmtBRL);
 
     if (compareYearsFaturamento.size < 2) {
       document.getElementById('faturamentoTrendDesc').textContent = scopeLabel + ' · valor da nota fiscal por mês de carregamento · Total: ' + fmtBRL(data.totals.revenue);
