@@ -91,6 +91,17 @@ function toNumber(v) {
   return isNaN(n) ? null : n;
 }
 
+// Valores monetários vêm formatados como " R$                        220.840,00 " (símbolo,
+// espaços largos de alinhamento da planilha, milhar com ponto, decimal com vírgula) - toNumber()
+// sozinho falha porque parseFloat não aceita o "R$" na frente. Tira tudo que não é dígito/vírgula/
+// ponto/sinal antes de aplicar a mesma troca de separador pt-BR -> formato numérico.
+function toMoney(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const cleaned = String(v).replace(/[^\d.,-]/g, '').trim();
+  if (!cleaned) return null;
+  return toNumber(cleaned);
+}
+
 // column maps: index is 0-based into row array
 //
 // As 3 abas (2024/2025/2026) têm o MESMO layout de colunas 0-14 (cliente, tipo, pedido, invoice,
@@ -100,8 +111,12 @@ function toNumber(v) {
 // ordem) e nunca foram atualizados: "volume" lia a coluna de data, "produto" lia a coluna de
 // volume, etc. - por isso o volume acumulado de 2024/2025 aparecia quase zerado no painel.
 const SCHEMAS = {
-  2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
-  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 23 },
+  2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 17 },
+  // valorInvoice: coluna "Valor Nota Fiscal" (17) - é a única das colunas de valor preenchida de
+  // forma consistente nas 3 abas (~120-150 linhas/ano, uma por invoice, como o volume). A aba
+  // 2025 também tem uma coluna "Valor Invoice" (23), mas ela está praticamente vazia (4 linhas
+  // preenchidas no total) - não usar como fonte de faturamento.
+  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 17 },
   2024: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, obs: 13, formatoData: 14, valorInvoice: 17 },
 };
 
@@ -152,7 +167,7 @@ function extractYear(year, filename, codigoFilename) {
         formatoData: schema.formatoData !== undefined ? (r[schema.formatoData] || '').trim() : '',
         obs: schema.obs !== undefined ? (r[schema.obs] || '').trim() : '',
         dataCarreg: parseDateValue(r[schema.dataCarreg], year),
-        valorInvoice: schema.valorInvoice !== undefined ? toNumber(r[schema.valorInvoice]) : null,
+        valorInvoice: schema.valorInvoice !== undefined ? toMoney(r[schema.valorInvoice]) : null,
         items: [],
       };
       shipments.push(current);
@@ -217,6 +232,7 @@ function buildOrders(shipments) {
     data: s.dataCarreg,
     year: s.year,
     volume: Math.round(s.totalVolume),
+    valorInvoice: (s.valorInvoice === null || s.valorInvoice === undefined) ? null : Math.round(s.valorInvoice * 100) / 100,
     items: s.items
       .map(it => ({ produto: (it.produto || '').trim(), codigo: (it.codigo || '').trim(), volume: Math.round(it.volume || 0) }))
       .filter(it => it.produto || it.volume),

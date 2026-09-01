@@ -132,8 +132,10 @@
   .tab-panel { display: none; flex-direction: column; gap: 24px; }
   .tab-panel.active { display: flex; }
   .analise-gate { display: none; max-width: 360px; margin: 60px auto; text-align: center; }
-  #panel-analise.analise-locked > *:not(#analiseGate) { display: none !important; }
-  #panel-analise.analise-locked .analise-gate { display: block; }
+  /* Regra por classe (não por ID) de propósito (01/09/2026): a aba Faturamento usa a mesma
+     cortina/senha da aba Análise, reaproveitando esta regra em vez de duplicá-la por ID. */
+  .tab-panel.analise-locked > *:not(.analise-gate) { display: none !important; }
+  .tab-panel.analise-locked .analise-gate { display: block; }
 
   /* KPI row */
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -462,6 +464,7 @@
   <div class="tabs" role="tablist">
     <button class="tab-btn active" data-tab="pedidos" role="tab" aria-selected="true">Pedidos por SKU</button>
     <button class="tab-btn" data-tab="analise" role="tab" aria-selected="false">Análise</button>
+    <button class="tab-btn" data-tab="faturamento" role="tab" aria-selected="false">Faturamento</button>
   </div>
 
   <div class="tab-panel active" id="panel-pedidos">
@@ -601,6 +604,63 @@
     </div>
   </div>
 
+  <div class="tab-panel analise-locked" id="panel-faturamento">
+    <div class="analise-gate" id="faturamentoGate">
+      <div class="card-title" style="margin-bottom:8px;">Área restrita</div>
+      <div class="card-desc" style="margin-bottom:16px;">Digite a senha para ver o faturamento.</div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <input type="password" id="faturamentoPasswordInput" class="filter-input" placeholder="Senha" style="max-width:220px; flex:none;" autocomplete="current-password">
+        <button type="button" id="faturamentoPasswordBtn" class="gate-btn">Entrar</button>
+      </div>
+      <div id="faturamentoPasswordError" style="color:var(--bad); font-size:12px; margin-top:10px; display:none;">Senha incorreta.</div>
+    </div>
+    <div class="filter-bar">
+      <select class="filter-select" id="faturamentoYear">
+        <option value="all">Todos os anos (2024–2026)</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+      </select>
+      <select class="filter-select" id="faturamentoMonth">
+        <option value="all">Todos os meses</option>
+      </select>
+      <input class="filter-input" id="faturamentoCountry" type="text" list="countryOptions" autocomplete="off" placeholder="Todos os países">
+      <span class="filter-count" id="faturamentoYearNote"></span>
+    </div>
+
+    <div class="kpi-row" id="faturamentoKpiRow"></div>
+
+    <div class="card">
+      <div class="card-title">Faturamento mensal (R$)</div>
+      <div class="card-desc" id="faturamentoTrendDesc">Jan/2024 – Set/2026 · valor da nota fiscal por mês de carregamento</div>
+      <div id="faturamentoTrendChart"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Faturamento por ano</div>
+        <div class="card-desc">2026 é parcial: embarques já programados até setembro</div>
+        <div id="faturamentoYearChart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Faturamento por país</div>
+        <div class="card-desc" id="faturamentoCountryDesc">Top países por valor de nota fiscal</div>
+        <div id="faturamentoCountryChart"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Faturamento por cliente</div>
+      <div class="card-desc" id="faturamentoClientDesc">Ranking de clientes por valor de nota fiscal</div>
+      <div id="faturamentoClientChart"></div>
+    </div>
+
+    <div class="footnote">
+      <b>Sobre o faturamento:</b> vem da coluna "Valor Nota Fiscal" da planilha, um valor por invoice (não por linha de produto).
+      Só ~70% dos pedidos têm essa coluna preenchida na planilha original — os demais entram como "sem valor" e não contam nos totais aqui.
+    </div>
+  </div>
+
   <div class="footnote">
     <b>Sobre os dados:</b> extraídos das abas "Programação Exportações 2024/2025/2026" da planilha de fluxo de exportação em 14/08/2026.
     Volumes em caixas (Cx). Linhas de subtotal da planilha foram excluídas do cálculo. Nem todas as colunas existem em todos os anos —
@@ -626,6 +686,13 @@
 
   var fmt = function (n) { return Math.round(n).toLocaleString('pt-BR'); };
   var pct = function (n) { return (n * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'; };
+  var fmtBRL = function (n) { return (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }); };
+  var fmtBRLCompact = function (n) {
+    var v = n || 0;
+    if (Math.abs(v) >= 1000000) return 'R$ ' + (v / 1000000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'M';
+    if (Math.abs(v) >= 1000) return 'R$ ' + (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + 'K';
+    return fmtBRL(v);
+  };
 
   var MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   function monthLabel(key) {
@@ -1231,7 +1298,11 @@
   }
 
   /* ---------- Horizontal bar list (countries / clients) ---------- */
-  function renderHBarList(containerId, items, labelKey) {
+  // valueFmt opcional (01/09/2026): por padrão formata em caixas, igual sempre foi - a aba
+  // Faturamento reaproveita esta mesma função passando um formatador em R$ em vez de duplicar
+  // tudo isso só pra trocar a unidade exibida.
+  function renderHBarList(containerId, items, labelKey, valueFmt) {
+    valueFmt = valueFmt || function (v) { return fmt(v) + ' cx'; };
     var container = document.getElementById(containerId);
     container.innerHTML = '';
     var list = document.createElement('div');
@@ -1259,7 +1330,7 @@
 
       var value = document.createElement('div');
       value.className = 'hbar-value';
-      value.textContent = fmt(d.volume) + ' cx';
+      value.textContent = valueFmt(d.volume);
 
       row.appendChild(label);
       row.appendChild(track);
@@ -1269,7 +1340,7 @@
       row.addEventListener('pointermove', function (evt) {
         showTooltip(evt.clientX, evt.clientY, [
           { text: titleCase(d[labelKey]) },
-          { strong: fmt(d.volume) + ' cx', rest: '· ' + pct(d.share) }
+          { strong: valueFmt(d.volume), rest: '· ' + pct(d.share) }
         ]);
       });
       row.addEventListener('pointerleave', hideTooltip);
@@ -1855,6 +1926,255 @@
     document.getElementById('analiseYearNote').textContent = fmt(data.totals.shipments) + ' pedidos · ' + fmt(data.totals.volume) + ' cx';
   }
 
+  /* ---------- Aba Faturamento ----------
+     Valor da nota fiscal é por INVOICE (um valor por pedido, não por linha de SKU) - por isso
+     tudo aqui soma a partir de ORDERS, nunca de SKU_ROWS (que somaria o mesmo valor várias vezes,
+     uma por item do pedido). Só entram pedidos com valorInvoice preenchido; o resto (~30%) fica
+     de fora do total, não conta como zero. */
+  function computeFaturamento(yearFilter, monthFilter, countryFilter) {
+    monthFilter = monthFilter || 'all';
+    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    var orders = ORDERS.filter(function (o) {
+      if (o.valorInvoice == null) return false;
+      if (yearFilter !== 'all' && String(o.year) !== yearFilter) return false;
+      if (monthFilter !== 'all') {
+        if (!o.data) return false;
+        var d = new Date(o.data);
+        var mk = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+        if (mk !== monthFilter) return false;
+      }
+      if (countryQ && titleCase(o.pais).toLowerCase().indexOf(countryQ) === -1) return false;
+      return true;
+    });
+
+    var byMonth = {}, byCountry = {}, byClient = {};
+    var total = 0;
+    orders.forEach(function (o) {
+      total += o.valorInvoice;
+      if (o.data) {
+        var d = new Date(o.data);
+        var key = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+        byMonth[key] = (byMonth[key] || 0) + o.valorInvoice;
+      }
+      if (o.pais) byCountry[o.pais] = (byCountry[o.pais] || 0) + o.valorInvoice;
+      if (o.cliente) { var cKey = normalizeClient(o.cliente); byClient[cKey] = (byClient[cKey] || 0) + o.valorInvoice; }
+    });
+
+    var months = Object.keys(byMonth).sort();
+    var monthlySeries = months.map(function (m) { return { month: m, revenue: byMonth[m] }; });
+    var countriesAgg = topNWithOthersClient(byCountry, 8, 'pais');
+    var clientsAgg = topNWithOthersClient(byClient, 8, 'cliente');
+
+    return {
+      totals: { revenue: total, shipments: orders.length },
+      monthlySeries: monthlySeries,
+      topCountries: countriesAgg.items,
+      topClients: clientsAgg.items
+    };
+  }
+
+  // Ano sempre mostra o total geral (sem filtro de mês/país) - igual ao gráfico "Volume por ano"
+  // da aba Análise, que também nunca reflete o filtro de país/mês. Calculado uma vez só, os
+  // pedidos não mudam depois que a página carrega.
+  var BY_YEAR_REVENUE = (function () {
+    var byYear = {};
+    ORDERS.forEach(function (o) {
+      if (o.valorInvoice == null) return;
+      byYear[o.year] = (byYear[o.year] || 0) + o.valorInvoice;
+    });
+    return byYear;
+  })();
+
+  function renderFaturamentoKPIs(data, yearFilter) {
+    var kpis = [
+      { label: 'Faturamento total', value: fmtBRL(data.totals.revenue), note: yearFilter === 'all' ? '2024 – 2026 (parcial)' : yearFilter + (yearFilter === '2026' ? ' (parcial)' : '') },
+      { label: 'Pedidos com valor', value: fmt(data.totals.shipments), note: 'notas de exportação com valor preenchido' },
+      { label: 'Ticket médio', value: data.totals.shipments ? fmtBRL(data.totals.revenue / data.totals.shipments) : fmtBRL(0), note: 'por invoice' }
+    ];
+    var row = document.getElementById('faturamentoKpiRow');
+    row.innerHTML = '';
+    kpis.forEach(function (k) {
+      var tile = document.createElement('div');
+      tile.className = 'kpi fade-in-el';
+      var l = document.createElement('div'); l.className = 'kpi-label'; l.textContent = k.label;
+      var v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = k.value;
+      var n = document.createElement('div'); n.className = 'kpi-note'; n.textContent = k.note;
+      tile.appendChild(l); tile.appendChild(v); tile.appendChild(n);
+      row.appendChild(tile);
+    });
+  }
+
+  function renderMoneyMonthlyChart(containerId, series) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    if (!series.length) {
+      var empty = document.createElement('div');
+      empty.className = 'muted-cell';
+      empty.textContent = 'Sem pedidos com valor de nota fiscal neste período.';
+      container.appendChild(empty);
+      return;
+    }
+    var W = 1080, H = 300, padL = 68, padR = 16, padT = 30, padB = 34;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var maxV = Math.max.apply(null, series.map(function (d) { return d.revenue; }));
+    var niceMax = Math.ceil(maxV / 500000) * 500000 || 1;
+
+    var n = Math.max(series.length - 1, 1);
+    var x = function (i) { return padL + (i / n) * innerW; };
+    var y = function (v) { return padT + innerH - (v / niceMax) * innerH; };
+    var slot = innerW / n;
+    var barW = Math.min(24, slot * 0.62);
+
+    var svg = svgEl('svg', { class: 'chart', viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+
+    var steps = 5;
+    for (var s = 0; s <= steps; s++) {
+      var val = (niceMax / steps) * s;
+      var gy = y(val);
+      svg.appendChild(svgEl('line', { class: 'gridline', x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      var lbl = svgEl('text', { class: 'axis-label', x: padL - 8, y: gy + 4, 'text-anchor': 'end' });
+      lbl.textContent = fmtBRLCompact(val);
+      svg.appendChild(lbl);
+    }
+
+    series.forEach(function (d, i) {
+      if (d.month.slice(5) === '01' && series.length > 12) {
+        var gx = x(i) - slot / 2;
+        svg.appendChild(svgEl('line', { class: 'baseline', x1: gx, x2: gx, y1: padT, y2: padT + innerH }));
+        var yl = svgEl('text', { class: 'axis-label', x: gx + 4, y: H - 10, 'text-anchor': 'start' });
+        yl.textContent = d.month.slice(0, 4);
+        svg.appendChild(yl);
+      }
+    });
+
+    var animBars = [];
+    series.forEach(function (d, i) {
+      var bx = x(i) - barW / 2;
+      var bh = (d.revenue / niceMax) * innerH;
+      var by = padT + innerH - bh;
+      var baseline = padT + innerH;
+      var rect = svgEl('rect', { class: 'bar-mark', x: bx, y: baseline, width: barW, height: 0, rx: 2 });
+      svg.appendChild(rect);
+      animBars.push({ rect: rect, y: by, height: Math.max(bh, 1.5) });
+
+      if (series.length <= 12) {
+        var mlbl = svgEl('text', { class: 'axis-label', x: x(i), y: H - 10, 'text-anchor': 'middle' });
+        mlbl.textContent = monthLabel(d.month);
+        svg.appendChild(mlbl);
+      }
+
+      rect.addEventListener('pointermove', function (evt) {
+        var rectBB = svg.getBoundingClientRect();
+        var scale = rectBB.width / W;
+        showTooltip(rectBB.left + x(i) * scale, rectBB.top + by * scale, [
+          { text: monthLabel(d.month) },
+          { strong: fmtBRL(d.revenue) }
+        ]);
+      });
+      rect.addEventListener('pointerleave', hideTooltip);
+    });
+
+    container.appendChild(svg);
+    requestAnimationFrame(function () {
+      animBars.forEach(function (b) { b.rect.setAttribute('y', b.y); b.rect.setAttribute('height', b.height); });
+    });
+  }
+
+  function renderMoneyYearChart(containerId, byYearMap) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = '';
+    var years = Object.keys(byYearMap).sort();
+    var values = years.map(function (y) { return byYearMap[y]; });
+    var maxV = Math.max.apply(null, values);
+    var W = 480, H = 220, padL = 60, padR = 16, padT = 16, padB = 30;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var bw = 64, gap = (innerW - bw * years.length) / (years.length + 1);
+
+    var svg = svgEl('svg', { class: 'chart', viewBox: '0 0 ' + W + ' ' + H });
+    var niceMax = Math.ceil(maxV / 500000) * 500000 || 1;
+    var steps = 4;
+    for (var s = 0; s <= steps; s++) {
+      var val = (niceMax / steps) * s;
+      var gy = padT + innerH - (val / niceMax) * innerH;
+      svg.appendChild(svgEl('line', { class: 'gridline', x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      var lbl = svgEl('text', { class: 'axis-label', x: padL - 8, y: gy + 4, 'text-anchor': 'end' });
+      lbl.textContent = fmtBRLCompact(val);
+      svg.appendChild(lbl);
+    }
+
+    var animYearBars = [];
+    years.forEach(function (yr, i) {
+      var v = byYearMap[yr];
+      var bx = padL + gap + i * (bw + gap);
+      var bh = (v / niceMax) * innerH;
+      var by = padT + innerH - bh;
+      var baseline = padT + innerH;
+      var rect = svgEl('rect', { class: 'year-bar-mark', x: bx, y: baseline, width: bw, height: 0, rx: 4, fill: 'var(--accent)' });
+      svg.appendChild(rect);
+      animYearBars.push({ rect: rect, y: by, height: Math.max(bh, 2) });
+
+      var val = svgEl('text', { class: 'axis-label', x: bx + bw / 2, y: by - 8, 'text-anchor': 'middle' });
+      val.setAttribute('fill', 'var(--ink-2)');
+      val.textContent = fmtBRLCompact(v);
+      svg.appendChild(val);
+
+      var xl = svgEl('text', { class: 'axis-label', x: bx + bw / 2, y: H - 10, 'text-anchor': 'middle' });
+      xl.textContent = yr + (yr === years[years.length - 1] ? ' *' : '');
+      svg.appendChild(xl);
+
+      rect.addEventListener('pointermove', function (evt) {
+        var rectBB = svg.getBoundingClientRect();
+        var scale = rectBB.width / W;
+        showTooltip(rectBB.left + (bx + bw / 2) * scale, rectBB.top + by * scale, [
+          { strong: fmtBRL(v) }
+        ]);
+      });
+      rect.addEventListener('pointerleave', hideTooltip);
+    });
+
+    container.appendChild(svg);
+    requestAnimationFrame(function () {
+      animYearBars.forEach(function (b) { b.rect.setAttribute('y', b.y); b.rect.setAttribute('height', b.height); });
+    });
+  }
+
+  function populateFaturamentoMonths(yearFilter, selectedMonth) {
+    var sel = document.getElementById('faturamentoMonth');
+    sel.innerHTML = '';
+    var allOpt = document.createElement('option'); allOpt.value = 'all'; allOpt.textContent = 'Todos os meses'; sel.appendChild(allOpt);
+    var keys = Array.from(new Set(ORDERS.filter(function (o) {
+      return o.valorInvoice != null && o.data && (yearFilter === 'all' || String(o.year) === yearFilter);
+    }).map(function (o) {
+      var d = new Date(o.data);
+      return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+    }))).sort();
+    keys.forEach(function (k) {
+      var opt = document.createElement('option'); opt.value = k; opt.textContent = monthKeyLabel(k);
+      sel.appendChild(opt);
+    });
+    sel.value = (selectedMonth && keys.indexOf(selectedMonth) !== -1) ? selectedMonth : 'all';
+  }
+
+  function renderFaturamento(yearFilter, monthFilter, countryFilter) {
+    monthFilter = monthFilter || 'all';
+    countryFilter = countryFilter || 'all';
+    var data = computeFaturamento(yearFilter, monthFilter, countryFilter);
+    var yearLabel = yearFilter === 'all' ? '2024–2026' : yearFilter;
+    var scopeLabel = yearLabel + (monthFilter !== 'all' ? ' · ' + monthKeyLabel(monthFilter) : '') + ((countryFilter && countryFilter !== 'all') ? ' · ' + titleCase(countryFilter) : '');
+
+    renderFaturamentoKPIs(data, yearFilter);
+    renderMoneyMonthlyChart('faturamentoTrendChart', data.monthlySeries);
+    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE);
+    renderHBarList('faturamentoCountryChart', data.topCountries, 'pais', fmtBRL);
+    renderHBarList('faturamentoClientChart', data.topClients, 'cliente', fmtBRL);
+
+    document.getElementById('faturamentoTrendDesc').textContent = scopeLabel + ' · valor da nota fiscal por mês de carregamento';
+    document.getElementById('faturamentoCountryDesc').textContent = 'Top países por valor de nota fiscal · ' + scopeLabel;
+    document.getElementById('faturamentoClientDesc').textContent = 'Ranking de clientes por valor de nota fiscal · ' + scopeLabel;
+    document.getElementById('faturamentoYearNote').textContent = fmt(data.totals.shipments) + ' pedidos com valor · ' + fmtBRL(data.totals.revenue);
+  }
+
   /* ---------- Senha da aba Análise ----------
      Cortina simples, não é segurança de verdade: o painel é um site estático publicado no
      GitHub Pages (repositório público), e todo o dado usado aqui já está carregado no mesmo
@@ -1870,17 +2190,20 @@
       return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
     });
   }
+  // Faturamento usa a MESMA senha/sessão da Análise, de propósito (01/09/2026) - destravar uma
+  // destrava as duas, pra não pedir a mesma senha duas vezes. unlockAnalise() por isso remove o
+  // cadeado dos dois painéis, não só do de Análise.
   function unlockAnalise() {
     document.getElementById('panel-analise').classList.remove('analise-locked');
+    var pf = document.getElementById('panel-faturamento');
+    if (pf) pf.classList.remove('analise-locked');
     try { sessionStorage.setItem('analiseUnlocked', '1'); } catch (e) {}
   }
-  function setupAnaliseGate() {
-    var input = document.getElementById('analisePasswordInput');
-    var btn = document.getElementById('analisePasswordBtn');
-    var err = document.getElementById('analisePasswordError');
-    try {
-      if (sessionStorage.getItem('analiseUnlocked') === '1') { unlockAnalise(); return; }
-    } catch (e) {}
+  function setupOneAnaliseGate(inputId, btnId, errId) {
+    var input = document.getElementById(inputId);
+    var btn = document.getElementById(btnId);
+    var err = document.getElementById(errId);
+    if (!input || !btn || !err) return;
     if (!window.crypto || !window.crypto.subtle) {
       err.textContent = 'Este navegador não permite verificar a senha aqui (precisa de conexão https).';
       err.style.display = 'block';
@@ -1900,6 +2223,13 @@
     }
     btn.addEventListener('click', tryUnlock);
     input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') tryUnlock(); });
+  }
+  function setupAnaliseGate() {
+    try {
+      if (sessionStorage.getItem('analiseUnlocked') === '1') { unlockAnalise(); return; }
+    } catch (e) {}
+    setupOneAnaliseGate('analisePasswordInput', 'analisePasswordBtn', 'analisePasswordError');
+    setupOneAnaliseGate('faturamentoPasswordInput', 'faturamentoPasswordBtn', 'faturamentoPasswordError');
   }
 
   // Senha própria, diferente da aba Análise (26/08/2026): o botão "Validar" ficava visível e
@@ -2224,6 +2554,7 @@
       }
       grid.appendChild(buildDetailField('Tipo de estufagem', o.estufagem));
       grid.appendChild(buildDetailField('Transportadora', o.transportadora));
+      if (o.valorInvoice != null) grid.appendChild(buildDetailField('Valor da Nota Fiscal', fmtBRL(o.valorInvoice)));
       if (o.agenteCarga) grid.appendChild(buildDetailField('Agente de carga', o.agenteCarga));
       if (o.etiquetagem) {
         var etiUpper = o.etiquetagem.trim().toUpperCase();
@@ -2504,5 +2835,22 @@
   });
 
   renderAnalise(defaultYear, 'all', 'all');
+
+  var faturamentoYearSelect = document.getElementById('faturamentoYear');
+  var faturamentoCountryInput = document.getElementById('faturamentoCountry');
+  faturamentoYearSelect.value = defaultYear;
+  populateFaturamentoMonths(defaultYear, 'all');
+
+  function runFaturamento() {
+    renderFaturamento(faturamentoYearSelect.value, document.getElementById('faturamentoMonth').value, faturamentoCountryInput.value);
+  }
+  faturamentoYearSelect.addEventListener('change', function () {
+    populateFaturamentoMonths(faturamentoYearSelect.value, 'all');
+    runFaturamento();
+  });
+  document.getElementById('faturamentoMonth').addEventListener('change', runFaturamento);
+  faturamentoCountryInput.addEventListener('input', runFaturamento);
+
+  renderFaturamento(defaultYear, 'all', 'all');
 })();
 </script>
