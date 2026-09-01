@@ -639,7 +639,7 @@
     <div class="grid-2">
       <div class="card">
         <div class="card-title">Faturamento por ano</div>
-        <div class="card-desc">2026 é parcial: embarques já programados até setembro</div>
+        <div class="card-desc" id="faturamentoYearChartDesc">2026 é parcial: embarques já programados até setembro · clique numa barra para comparar mês a mês no gráfico acima</div>
         <div id="faturamentoYearChart"></div>
       </div>
       <div class="card">
@@ -2088,7 +2088,10 @@
     });
   }
 
-  function renderMoneyYearChart(containerId, byYearMap) {
+  // highlightYear/compareSet opcionais (01/09/2026): clicar numa barra de ano soma/tira aquele
+  // ano da comparação mês a mês no gráfico "Faturamento mensal" acima, igual ao "Volume por ano"
+  // já fazia pro volume.
+  function renderMoneyYearChart(containerId, byYearMap, highlightYear, compareSet) {
     var container = document.getElementById(containerId);
     container.innerHTML = '';
     var years = Object.keys(byYearMap).sort();
@@ -2117,7 +2120,12 @@
       var bh = (v / niceMax) * innerH;
       var by = padT + innerH - bh;
       var baseline = padT + innerH;
-      var rect = svgEl('rect', { class: 'year-bar-mark', x: bx, y: baseline, width: bw, height: 0, rx: 4, fill: 'var(--accent)' });
+      var isHighlighted = !highlightYear || highlightYear === 'all' || highlightYear === yr;
+      var isCompared = compareSet && compareSet.has(yr);
+      var rect = svgEl('rect', {
+        class: 'year-bar-mark' + (isCompared ? ' year-bar-compared' : ''),
+        x: bx, y: baseline, width: bw, height: 0, rx: 4, fill: isHighlighted ? 'var(--accent)' : 'var(--other)'
+      });
       svg.appendChild(rect);
       animYearBars.push({ rect: rect, y: by, height: Math.max(bh, 2) });
 
@@ -2130,11 +2138,15 @@
       xl.textContent = yr + (yr === years[years.length - 1] ? ' *' : '');
       svg.appendChild(xl);
 
+      rect.style.cursor = 'pointer';
+      rect.addEventListener('click', function (evt) { evt.stopPropagation(); toggleCompareYearFaturamento(yr); });
+
       rect.addEventListener('pointermove', function (evt) {
         var rectBB = svg.getBoundingClientRect();
         var scale = rectBB.width / W;
         showTooltip(rectBB.left + (bx + bw / 2) * scale, rectBB.top + by * scale, [
-          { strong: fmtBRL(v) }
+          { strong: fmtBRL(v) },
+          { text: isCompared ? 'clique para tirar da comparação' : 'clique para comparar no gráfico acima' }
         ]);
       });
       rect.addEventListener('pointerleave', hideTooltip);
@@ -2144,6 +2156,119 @@
     requestAnimationFrame(function () {
       animYearBars.forEach(function (b) { b.rect.setAttribute('y', b.y); b.rect.setAttribute('height', b.height); });
     });
+  }
+
+  /* ---------- Comparação de anos mês a mês (Faturamento) ---------- */
+  var compareYearsFaturamento = new Set();
+  var lastFaturamentoTrendSeries = [];
+
+  function toggleCompareYearFaturamento(yr) {
+    if (compareYearsFaturamento.has(yr)) compareYearsFaturamento.delete(yr);
+    else compareYearsFaturamento.add(yr);
+    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, document.getElementById('faturamentoYear').value, compareYearsFaturamento);
+    updateFaturamentoTrendSection();
+  }
+
+  function updateFaturamentoTrendSection() {
+    if (compareYearsFaturamento.size >= 2) {
+      var years = Array.from(compareYearsFaturamento).sort();
+      renderMoneyCompareChart('faturamentoTrendChart', years);
+      document.getElementById('faturamentoTrendDesc').textContent = 'Comparando ' + years.join(' vs ') + ' · clique num ano no gráfico "Faturamento por ano" para tirar da comparação';
+    } else {
+      renderMoneyMonthlyChart('faturamentoTrendChart', lastFaturamentoTrendSeries);
+    }
+  }
+
+  function renderMoneyCompareChart(containerId, years) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    var seriesByYear = {};
+    years.forEach(function (yr) {
+      var monthly = computeFaturamento(yr, 'all', 'all').monthlySeries;
+      var byMonthNum = {};
+      monthly.forEach(function (d) { byMonthNum[parseInt(d.month.split('-')[1], 10)] = d.revenue; });
+      seriesByYear[yr] = byMonthNum;
+    });
+
+    var W = 1080, H = 300, padL = 68, padR = 16, padT = 30, padB = 40;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var maxV = 1;
+    years.forEach(function (yr) {
+      for (var m = 1; m <= 12; m++) maxV = Math.max(maxV, seriesByYear[yr][m] || 0);
+    });
+    var niceMax = Math.ceil(maxV / 500000) * 500000 || 1;
+
+    var monthSlot = innerW / 12;
+    var groupW = monthSlot * 0.72;
+    var barW = Math.min(22, groupW / years.length - 2);
+    var y = function (v) { return padT + innerH - (v / niceMax) * innerH; };
+
+    var svg = svgEl('svg', { class: 'chart', viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+
+    var steps = 5;
+    for (var s = 0; s <= steps; s++) {
+      var val = (niceMax / steps) * s;
+      var gy = y(val);
+      svg.appendChild(svgEl('line', { class: 'gridline', x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      var lbl = svgEl('text', { class: 'axis-label', x: padL - 8, y: gy + 4, 'text-anchor': 'end' });
+      lbl.textContent = fmtBRLCompact(val);
+      svg.appendChild(lbl);
+    }
+
+    var animBars = [];
+    for (var m = 1; m <= 12; m++) {
+      var groupX = padL + monthSlot * (m - 1) + (monthSlot - groupW) / 2;
+      var mlbl = svgEl('text', { class: 'axis-label', x: padL + monthSlot * (m - 1) + monthSlot / 2, y: H - 22, 'text-anchor': 'middle' });
+      mlbl.textContent = MONTH_ABBR[m - 1];
+      svg.appendChild(mlbl);
+
+      years.forEach(function (yr, yi) {
+        var v = seriesByYear[yr][m] || 0;
+        var bx = groupX + yi * (barW + 3);
+        var baseline = padT + innerH;
+        var bh = (v / niceMax) * innerH;
+        var by = baseline - bh;
+        var rect = svgEl('rect', { class: 'bar-mark', x: bx, y: baseline, width: barW, height: 0, rx: 2 });
+        rect.style.fill = COMPARE_COLORS[yi % COMPARE_COLORS.length];
+        svg.appendChild(rect);
+        animBars.push({ rect: rect, y: by, height: Math.max(bh, v > 0 ? 1.5 : 0) });
+
+        if (v > 0) {
+          var vlbl = svgEl('text', { x: bx + barW / 2, y: by - 4, 'text-anchor': 'middle', 'font-size': '7' });
+          vlbl.style.fill = COMPARE_COLORS[yi % COMPARE_COLORS.length];
+          vlbl.textContent = fmtBRLCompact(v);
+          svg.appendChild(vlbl);
+        }
+
+        rect.addEventListener('pointermove', function (evt) {
+          var rectBB = svg.getBoundingClientRect();
+          var scale = rectBB.width / W;
+          showTooltip(rectBB.left + (bx + barW / 2) * scale, rectBB.top + by * scale, [
+            { text: MONTH_FULL[m - 1] + ' de ' + yr },
+            { strong: fmtBRL(v) }
+          ]);
+        });
+        rect.addEventListener('pointerleave', hideTooltip);
+      });
+    }
+
+    container.appendChild(svg);
+    requestAnimationFrame(function () {
+      animBars.forEach(function (b) { b.rect.setAttribute('y', b.y); b.rect.setAttribute('height', b.height); });
+    });
+
+    var legend = document.createElement('div');
+    legend.className = 'legend';
+    years.forEach(function (yr, i) {
+      var item = document.createElement('div'); item.className = 'legend-item';
+      var sw = document.createElement('span'); sw.className = 'legend-swatch'; sw.style.background = COMPARE_COLORS[i % COMPARE_COLORS.length];
+      var txt = document.createElement('span'); txt.textContent = yr;
+      item.appendChild(sw); item.appendChild(txt);
+      legend.appendChild(item);
+    });
+    container.appendChild(legend);
   }
 
   function populateFaturamentoMonths(yearFilter, selectedMonth) {
@@ -2171,14 +2296,22 @@
     var scopeLabel = yearLabel + (monthFilter !== 'all' ? ' · ' + monthKeyLabel(monthFilter) : '') + ((countryFilter && countryFilter !== 'all') ? ' · ' + titleCase(countryFilter) : '');
 
     renderFaturamentoKPIs(data, yearFilter);
-    renderMoneyMonthlyChart('faturamentoTrendChart', data.monthlySeries);
-    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE);
+    lastFaturamentoTrendSeries = data.monthlySeries;
+    updateFaturamentoTrendSection();
+    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, yearFilter, compareYearsFaturamento);
     renderHBarList('faturamentoCountryChart', data.topCountries, 'pais', fmtBRL);
     renderHBarList('faturamentoClientChart', data.topClients, 'cliente', fmtBRL);
 
-    document.getElementById('faturamentoTrendDesc').textContent = scopeLabel + ' · valor da nota fiscal por mês de carregamento';
-    document.getElementById('faturamentoCountryDesc').textContent = 'Top países por valor de nota fiscal · ' + scopeLabel;
-    document.getElementById('faturamentoClientDesc').textContent = 'Ranking de clientes por valor de nota fiscal · ' + scopeLabel;
+    var countryTotal = data.topCountries.reduce(function (a, c) { return a + c.volume; }, 0);
+    var clientTotal = data.topClients.reduce(function (a, c) { return a + c.volume; }, 0);
+    var yearGrandTotal = Object.keys(BY_YEAR_REVENUE).reduce(function (a, y) { return a + BY_YEAR_REVENUE[y]; }, 0);
+
+    if (compareYearsFaturamento.size < 2) {
+      document.getElementById('faturamentoTrendDesc').textContent = scopeLabel + ' · valor da nota fiscal por mês de carregamento · Total: ' + fmtBRL(data.totals.revenue);
+    }
+    document.getElementById('faturamentoYearChartDesc').textContent = '2026 é parcial: embarques já programados até setembro · Total 2024–2026: ' + fmtBRL(yearGrandTotal) + ' · clique numa barra para comparar mês a mês';
+    document.getElementById('faturamentoCountryDesc').textContent = 'Top países por valor de nota fiscal · ' + scopeLabel + ' · Total: ' + fmtBRL(countryTotal);
+    document.getElementById('faturamentoClientDesc').textContent = 'Ranking de clientes por valor de nota fiscal · ' + scopeLabel + ' · Total: ' + fmtBRL(clientTotal);
     document.getElementById('faturamentoYearNote').textContent = fmt(data.totals.shipments) + ' pedidos com valor · ' + fmtBRL(data.totals.revenue);
   }
 
@@ -2857,6 +2990,26 @@
   });
   document.getElementById('faturamentoMonth').addEventListener('change', runFaturamento);
   faturamentoCountryInput.addEventListener('input', runFaturamento);
+
+  document.addEventListener('click', function (evt) {
+    var panel = document.getElementById('panel-faturamento');
+    if (!panel.classList.contains('active')) return;
+    if (evt.target.closest('.filter-bar') || evt.target.closest('.tabs')) return;
+    var monthSel = document.getElementById('faturamentoMonth');
+    var hadCompare = compareYearsFaturamento.size > 0;
+    if (hadCompare) {
+      compareYearsFaturamento.clear();
+      renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, faturamentoYearSelect.value, compareYearsFaturamento);
+      updateFaturamentoTrendSection();
+    }
+    if (monthSel.value !== 'all' || faturamentoCountryInput.value !== '') {
+      monthSel.value = 'all';
+      faturamentoCountryInput.value = '';
+      runFaturamento();
+    } else if (hadCompare) {
+      runFaturamento();
+    }
+  });
 
   renderFaturamento(defaultYear, 'all', 'all');
 })();
