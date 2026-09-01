@@ -1,6 +1,8 @@
 {
-  "generatedAt": "2026-08-31T17:40:59.061Z",
-  "newInvoices": [],
+  "generatedAt": "2026-09-01T12:28:47.035Z",
+  "newInvoices": [
+    "20170880"
+  ],
   "changedInvoices": [
     "20170447",
     "20170450",
@@ -277,7 +279,9 @@
     "20170797",
     "20170818",
     "20170850",
-    "20170865"
+    "20170865",
+    "20170870",
+    "20170860"
   ],
   "itemChanges": [
     {
@@ -11346,6 +11350,13 @@
       "type": "novo",
       "oldVolume": 0,
       "newVolume": 70
+    },
+    {
+      "invoice": "20170870",
+      "produto": "TORTILLAS DE TAPIOCA ORIGINAL WRAPIOCA 210 G - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
     }
   ],
   "dateChanges": [
@@ -12708,6 +12719,11 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170860",
+      "oldDate": "2026-09-01T00:00:00.000Z",
+      "newDate": "2026-09-08T00:00:00.000Z"
     }
   ]
 }
