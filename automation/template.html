@@ -1962,8 +1962,8 @@
 
     var months = Object.keys(byMonth).sort();
     var monthlySeries = months.map(function (m) { return { month: m, revenue: byMonth[m] }; });
-    var countriesAgg = topNWithOthersClient(byCountry, 8, 'pais');
-    var clientsAgg = topNWithOthersClient(byClient, 8, 'cliente');
+    var countriesAgg = topNWithOthersClient(byCountry, Infinity, 'pais');
+    var clientsAgg = topNWithOthersClient(byClient, Infinity, 'cliente');
 
     return {
       totals: { revenue: total, shipments: orders.length },
@@ -2057,6 +2057,13 @@
       var rect = svgEl('rect', { class: 'bar-mark', x: bx, y: baseline, width: barW, height: 0, rx: 2 });
       svg.appendChild(rect);
       animBars.push({ rect: rect, y: by, height: Math.max(bh, 1.5) });
+
+      if (d.revenue > 0) {
+        var vlbl = svgEl('text', { class: 'axis-label', x: x(i), y: by - 6, 'text-anchor': 'middle' });
+        vlbl.setAttribute('font-size', series.length > 20 ? '8.5' : '10');
+        vlbl.textContent = fmtBRLCompact(d.revenue);
+        svg.appendChild(vlbl);
+      }
 
       if (series.length <= 12) {
         var mlbl = svgEl('text', { class: 'axis-label', x: x(i), y: H - 10, 'text-anchor': 'middle' });
