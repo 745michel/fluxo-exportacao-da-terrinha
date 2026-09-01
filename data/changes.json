@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-01T12:28:47.035Z",
+  "generatedAt": "2026-09-01T17:57:12.245Z",
   "newInvoices": [
-    "20170880"
+    "20170879"
   ],
   "changedInvoices": [
     "20170447",
@@ -277,11 +277,12 @@
     "20170739",
     "20170781",
     "20170797",
+    "20170809",
     "20170818",
+    "20170852",
     "20170850",
     "20170865",
-    "20170870",
-    "20170860"
+    "20170866"
   ],
   "itemChanges": [
     {
@@ -11331,11 +11332,32 @@
       "newVolume": 47
     },
     {
+      "invoice": "20170809",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
+      "type": "quantidade",
+      "oldVolume": 300,
+      "newVolume": 299
+    },
+    {
       "invoice": "20170818",
       "produto": "MOLHO ARABE COM PIMENTA DA TERRINHA 150 ML - CX 12 / ARABIC PEPPER SAUCE DA TERRINHA 150 ML - BX 12",
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
+    },
+    {
+      "invoice": "20170852",
+      "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12 / TAPIOCA FLOUR DA TERRINHA 1 KG - BX 12",
+      "type": "quantidade",
+      "oldVolume": 70,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170852",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
+      "type": "quantidade",
+      "oldVolume": 490,
+      "newVolume": 20
     },
     {
       "invoice": "20170850",
@@ -11352,11 +11374,11 @@
       "newVolume": 70
     },
     {
-      "invoice": "20170870",
-      "produto": "TORTILLAS DE TAPIOCA ORIGINAL WRAPIOCA 210 G - CX 12",
+      "invoice": "20170866",
+      "produto": "TAPIOCA DA TERRINHA 70G (LISA) - CX 100 / TAPIOCA FLOUR DA TERRINHA 70G (SMOOTH) - BX 100",
       "type": "novo",
       "oldVolume": 0,
-      "newVolume": 5
+      "newVolume": 180
     }
   ],
   "dateChanges": [
@@ -12719,11 +12741,6 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
-    },
-    {
-      "invoice": "20170860",
-      "oldDate": "2026-09-01T00:00:00.000Z",
-      "newDate": "2026-09-08T00:00:00.000Z"
     }
   ]
 }
