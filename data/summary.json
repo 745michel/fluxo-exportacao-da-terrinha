@@ -1,14 +1,134 @@
 {
   "totals": {
-    "shipments": 409,
-    "volume": 140209
+    "shipments": 408,
+    "volume": 459343
   },
   "byYear": {
-    "2024": 2096,
-    "2025": 2506,
+    "2024": 155264,
+    "2025": 168472,
     "2026": 135607
   },
   "monthlySeries": [
+    {
+      "month": "2024-01",
+      "volume": 1996,
+      "shipments": 1
+    },
+    {
+      "month": "2024-02",
+      "volume": 8271,
+      "shipments": 5
+    },
+    {
+      "month": "2024-03",
+      "volume": 15034,
+      "shipments": 10
+    },
+    {
+      "month": "2024-04",
+      "volume": 17267,
+      "shipments": 14
+    },
+    {
+      "month": "2024-05",
+      "volume": 12103,
+      "shipments": 13
+    },
+    {
+      "month": "2024-06",
+      "volume": 9966,
+      "shipments": 9
+    },
+    {
+      "month": "2024-07",
+      "volume": 22188,
+      "shipments": 17
+    },
+    {
+      "month": "2024-08",
+      "volume": 8089,
+      "shipments": 8
+    },
+    {
+      "month": "2024-09",
+      "volume": 8997,
+      "shipments": 8
+    },
+    {
+      "month": "2024-10",
+      "volume": 16704,
+      "shipments": 13
+    },
+    {
+      "month": "2024-11",
+      "volume": 13944,
+      "shipments": 11
+    },
+    {
+      "month": "2024-12",
+      "volume": 16121,
+      "shipments": 11
+    },
+    {
+      "month": "2025-01",
+      "volume": 9924,
+      "shipments": 7
+    },
+    {
+      "month": "2025-02",
+      "volume": 13119,
+      "shipments": 15
+    },
+    {
+      "month": "2025-03",
+      "volume": 14318,
+      "shipments": 10
+    },
+    {
+      "month": "2025-04",
+      "volume": 12720,
+      "shipments": 9
+    },
+    {
+      "month": "2025-05",
+      "volume": 15864,
+      "shipments": 14
+    },
+    {
+      "month": "2025-06",
+      "volume": 13953,
+      "shipments": 13
+    },
+    {
+      "month": "2025-07",
+      "volume": 14956,
+      "shipments": 12
+    },
+    {
+      "month": "2025-08",
+      "volume": 12299,
+      "shipments": 11
+    },
+    {
+      "month": "2025-09",
+      "volume": 16379,
+      "shipments": 16
+    },
+    {
+      "month": "2025-10",
+      "volume": 11873,
+      "shipments": 10
+    },
+    {
+      "month": "2025-11",
+      "volume": 15942,
+      "shipments": 18
+    },
+    {
+      "month": "2025-12",
+      "volume": 17125,
+      "shipments": 12
+    },
     {
       "month": "2026-01",
       "volume": 10012,
@@ -63,169 +183,169 @@
   "topCountries": [
     {
       "pais": "PORTUGAL",
-      "volume": 80636,
-      "share": 0.584098745400284
+      "volume": 255037,
+      "share": 0.5608931642540763
     },
     {
       "pais": "EUA",
-      "volume": 10374,
-      "share": 0.07514559731115811
-    },
-    {
-      "pais": "JAPÃO",
-      "volume": 8442,
-      "share": 0.06115087068640802
+      "volume": 31274,
+      "share": 0.06877971752679801
     },
     {
       "pais": "IRLANDA",
-      "volume": 5966,
-      "share": 0.04321559991887115
-    },
-    {
-      "pais": "FRANÇA",
-      "volume": 4573,
-      "share": 0.03312519920030134
-    },
-    {
-      "pais": "PARAGUAI",
-      "volume": 3294,
-      "share": 0.023860574276359632
+      "volume": 19313,
+      "share": 0.04247434560961341
     },
     {
       "pais": "ITÁLIA",
-      "volume": 3253,
-      "share": 0.023563584736186364
+      "volume": 16255,
+      "share": 0.03574900263471579
     },
     {
-      "pais": "HOLANDA",
-      "volume": 3071,
-      "share": 0.022245240923709907
+      "pais": "JAPÃO",
+      "volume": 14881,
+      "share": 0.03272721674606002
+    },
+    {
+      "pais": "MÉXICO",
+      "volume": 14560,
+      "share": 0.03202125366726927
+    },
+    {
+      "pais": "PARAGUAI",
+      "volume": 12510,
+      "share": 0.027512766715490283
+    },
+    {
+      "pais": "ALEMANHA",
+      "volume": 12509,
+      "share": 0.027510567453562583
     },
     {
       "pais": "OUTROS",
-      "volume": 18443,
-      "share": 0.13359458754672152,
+      "volume": 78359,
+      "share": 0.1723319653924143,
       "isOther": true
     }
   ],
   "topClients": [
     {
       "cliente": "GLEZ",
-      "volume": 50414,
-      "share": 0.3595632234735288
-    },
-    {
-      "cliente": "VISALIA",
-      "volume": 15744,
-      "share": 0.1122895106590875
+      "volume": 181363,
+      "share": 0.39483131341938377
     },
     {
       "cliente": "MALOCA",
-      "volume": 14198,
-      "share": 0.10126311435071929
+      "volume": 58042,
+      "share": 0.12635873410501522
     },
     {
-      "cliente": "IMAI",
-      "volume": 6775,
-      "share": 0.0483207212090522
-    },
-    {
-      "cliente": "MC IRLANDA",
-      "volume": 6077,
-      "share": 0.04334243878780963
-    },
-    {
-      "cliente": "CELER GLOBAL TRADING",
-      "volume": 5160,
-      "share": 0.036802202426377766
+      "cliente": "VISALIA",
+      "volume": 26420,
+      "share": 0.057516931791711204
     },
     {
       "cliente": "EB EXPRESS",
-      "volume": 3673,
-      "share": 0.02619660649459022
+      "volume": 21261,
+      "share": 0.0462856732332919
+    },
+    {
+      "cliente": "MC IRLANDA",
+      "volume": 19313,
+      "share": 0.042044833599292904
     },
     {
       "cliente": "FRESH TROPICAL",
-      "volume": 3328,
-      "share": 0.023735994123059146
+      "volume": 17404,
+      "share": 0.03788889783886987
+    },
+    {
+      "cliente": "SUCOS DO BRASIL",
+      "volume": 11807,
+      "share": 0.0257041034695206
+    },
+    {
+      "cliente": "COVIN",
+      "volume": 9803,
+      "share": 0.02134135058115613
     },
     {
       "cliente": "OUTROS",
-      "volume": 34840,
-      "share": 0.24848618847577544,
+      "volume": 113930,
+      "share": 0.24802816196175842,
       "isOther": true
     }
   ],
   "topProducts": [
     {
-      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G",
-      "volume": 44292,
-      "share": 0.3158998352459543
+      "produto": "TAPIOCA DA TERRINHA EXP 500G",
+      "volume": 61691,
+      "share": 0.13430268884036548
     },
     {
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G",
-      "volume": 18849,
-      "share": 0.13443502200286714
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G",
+      "volume": 57843,
+      "share": 0.1259255066475379
+    },
+    {
+      "produto": "TAPIOCA DA TERRINHA 500G",
+      "volume": 34456,
+      "share": 0.07501148379315675
+    },
+    {
+      "produto": "TAPIOCA DA TERRINHA VM EXP 500G",
+      "volume": 32518,
+      "share": 0.07079241438315159
     },
     {
       "produto": "FAROFA PRONTA DA TERRINHA TRADICIONAL 400 G",
-      "volume": 13384,
-      "share": 0.09545749559586046
+      "volume": 31722,
+      "share": 0.06905950455324235
+    },
+    {
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500G",
+      "volume": 26605,
+      "share": 0.05791968093559715
+    },
+    {
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G",
+      "volume": 22659,
+      "share": 0.049329150547629985
     },
     {
       "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G",
-      "volume": 6234,
-      "share": 0.04446219572210058
-    },
-    {
-      "produto": "TAPIOCA DA TERRINHA 1 KG",
-      "volume": 6165,
-      "share": 0.04397007324779437
+      "volume": 14536,
+      "share": 0.03164519759743808
     },
     {
       "produto": "FLOCAO DE MILHO DA TERRINHA 400G",
-      "volume": 4074,
-      "share": 0.029056622613384306
+      "volume": 13938,
+      "share": 0.030343338202606766
     },
     {
-      "produto": "FUBA MIMOSO DA TERRINHA 1 KG",
-      "volume": 3125,
-      "share": 0.02228815553923072
-    },
-    {
-      "produto": "FAROFA DE MANDIOCA DA TERRINHA 400 G EXP",
-      "volume": 3012,
-      "share": 0.021482215834932136
-    },
-    {
-      "produto": "TRIGO PARA KIBE DA TERRINHA 500 G",
-      "volume": 2367,
-      "share": 0.016881940531634918
-    },
-    {
-      "produto": "SAGU 25KG",
-      "volume": 2080,
-      "share": 0.014834996326911968
+      "produto": "TAPIOCA DA TERRINHA 1 KG",
+      "volume": 12944,
+      "share": 0.0281793779376196
     },
     {
       "produto": "OUTROS",
-      "volume": 36627,
-      "share": 0.2612314473393291,
+      "volume": 150431,
+      "share": 0.32749165656165435,
       "isOther": true
     }
   ],
   "byTipo": [
     {
       "tipo": "DIRETA",
-      "volume": 125453,
-      "share": 0.908335927827214
+      "volume": 417095,
+      "share": 0.9080251576708472
     },
     {
       "tipo": "TRADE",
-      "volume": 12660,
-      "share": 0.09166407217278605
+      "volume": 42248,
+      "share": 0.09197484232915272
     }
   ],
-  "countryCount": 57,
-  "clientCount": 63
+  "countryCount": 30,
+  "clientCount": 78
 }

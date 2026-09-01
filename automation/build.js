@@ -92,10 +92,17 @@ function toNumber(v) {
 }
 
 // column maps: index is 0-based into row array
+//
+// As 3 abas (2024/2025/2026) têm o MESMO layout de colunas 0-14 (cliente, tipo, pedido, invoice,
+// data, volume, codigo, produto, pais, estufagem, [vazia], agente, transportadora, etiquetagem/obs,
+// formato de data) - conferido direto nos CSVs exportados em 01/09/2026. Os schemas de 2024/2025
+// estavam com índices errados (herdados de uma versão antiga da planilha com colunas em outra
+// ordem) e nunca foram atualizados: "volume" lia a coluna de data, "produto" lia a coluna de
+// volume, etc. - por isso o volume acumulado de 2024/2025 aparecia quase zerado no painel.
 const SCHEMAS = {
   2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
-  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, volume: 4, codigo: 5, produto: 6, pais: 7, estufagem: 8, dataCarreg: 10, agenteCarga: 11, transportadora: 12, etiquetagem: 13, valorInvoice: 20 },
-  2024: { cliente: 1, pedido: 2, invoice: 3, volume: 4, produto: 5, pais: 6, estufagem: 7, dataCarreg: 8, transportadora: 9, obs: 10, valorInvoice: 15 },
+  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 23 },
+  2024: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, obs: 13, formatoData: 14, valorInvoice: 17 },
 };
 
 const BAD_CODIGO = new Set(['#N/A', '#N/D', '#REF!', '#VALOR!', '#NOME?', '#NULO!', '#DIV/0!', '-', '']);
