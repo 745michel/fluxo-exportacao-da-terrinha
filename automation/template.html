@@ -346,7 +346,7 @@
   .map-dot:hover { fill: var(--ink); }
 
   /* Country table with sparkline */
-  .country-table-scroll { max-height: 360px; overflow-y: auto; }
+  .country-table-scroll { overflow-y: visible; }
   .clickable-row { cursor: pointer; }
   .clickable-row:hover td { background: var(--surface-2); }
   #clientChart { max-height: 480px; overflow-y: auto; }
@@ -1710,7 +1710,7 @@
       return { pais: pais, volume: byCountry[pais], shipments: Object.keys(countryOrders[pais]).length };
     }).sort(function (a, b) { return b.volume - a.volume; });
 
-    var countryTable = countryPoints.slice(0, 10).map(function (c) {
+    var countryTable = countryPoints.map(function (c) {
       return {
         pais: c.pais, volume: c.volume, shipments: c.shipments,
         spark: months.map(function (m) { return (countryMonth[c.pais] && countryMonth[c.pais][m]) || 0; })
@@ -1931,7 +1931,7 @@
     if (compareYears.size < 2) {
       document.getElementById('trendChartDesc').textContent = scopeLabel + ' · clique numa barra para focar naquele mês · linhas verticais marcam a virada de cada ano';
     }
-    document.getElementById('countryTableDesc').textContent = fmt(data.countryCount) + ' países atendidos (' + scopeLabel + ') · top 10 por volume';
+    document.getElementById('countryTableDesc').textContent = fmt(data.countryCount) + ' países atendidos (' + scopeLabel + ') · todos, por volume';
     document.getElementById('clientChartDesc').textContent = fmt(data.clientCount) + ' clientes distintos (' + scopeLabel + ')';
     document.getElementById('carrierChartDesc').textContent = 'Volume (cx) por transportadora rodoviária · ' + scopeLabel;
     document.getElementById('productTableDesc').textContent = fmt(data.topProducts.length) + ' produtos · variações de embalagem consolidadas · ' + scopeLabel;
