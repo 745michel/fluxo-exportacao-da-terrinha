@@ -1770,7 +1770,9 @@
   /* ---------- Year comparison mode for the monthly trend chart ---------- */
   var compareYears = new Set();
   var lastTrendSeries = [];
-  var COMPARE_COLORS = ['var(--accent)', 'var(--good)', 'var(--info)', 'var(--other)'];
+  // Paleta em tons quentes de propósito (02/09/2026) - laranja/dourado/vermelho em vez de
+  // laranja/verde/azul, pra combinar com o tema preto+laranja em vez de destoar dele.
+  var COMPARE_COLORS = ['#f4581a', '#ffb703', '#d62828', '#f2a65a'];
 
   function toggleCompareYear(yr) {
     if (compareYears.has(yr)) compareYears.delete(yr);
