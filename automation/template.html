@@ -142,6 +142,7 @@
 
   /* KPI row */
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  #faturamentoKpiRow { grid-template-columns: repeat(5, 1fr); }
   .kpi {
     position: relative;
     background: var(--surface);
@@ -346,7 +347,7 @@
   .map-dot:hover { fill: var(--ink); }
 
   /* Country table with sparkline */
-  .country-table-scroll { overflow-y: visible; }
+  .country-table-scroll { max-height: 636px; overflow-y: auto; }
   .clickable-row { cursor: pointer; }
   .clickable-row:hover td { background: var(--surface-2); }
   #clientChart { max-height: 480px; overflow-y: auto; }
@@ -446,7 +447,7 @@
   .detail-inner { padding: 14px 16px 16px 42px; }
 
   @media (max-width: 860px) {
-    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .kpi-row, #faturamentoKpiRow { grid-template-columns: repeat(2, 1fr); }
     .grid-2 { grid-template-columns: 1fr; }
     .hbar-label { width: 96px; }
   }
@@ -1997,12 +1998,58 @@
     return byYear;
   })();
 
+  // Compara o mesmo conjunto de meses nos dois anos (não o ano inteiro) de propósito (02/09/2026):
+  // 2026 só tem dado até setembro, então comparar o ano cheio de 2025 contra o parcial de 2026
+  // sempre pareceria queda, mesmo crescendo. Isolar os meses que o ano-alvo realmente tem dado e
+  // somar só esses mesmos meses no ano anterior dá uma comparação justa.
+  function computeFaturamentoYoy(yearFilter) {
+    var years = Object.keys(BY_YEAR_REVENUE).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
+    if (years.length < 2) return null;
+    var targetYear = yearFilter === 'all' ? years[years.length - 1] : parseInt(yearFilter, 10);
+    var idx = years.indexOf(targetYear);
+    if (idx <= 0) return null;
+    var prevYear = years[idx - 1];
+
+    var targetMonths = {};
+    ORDERS.forEach(function (o) {
+      if (o.valorInvoice == null || o.year !== targetYear || !o.data) return;
+      targetMonths[new Date(o.data).getUTCMonth() + 1] = true;
+    });
+    var monthCount = Object.keys(targetMonths).length;
+    if (!monthCount) return null;
+
+    var curVal = 0, prevVal = 0;
+    ORDERS.forEach(function (o) {
+      if (o.valorInvoice == null || !o.data) return;
+      var m = new Date(o.data).getUTCMonth() + 1;
+      if (!targetMonths[m]) return;
+      if (o.year === targetYear) curVal += o.valorInvoice;
+      else if (o.year === prevYear) prevVal += o.valorInvoice;
+    });
+    if (!prevVal) return null;
+    return { targetYear: targetYear, prevYear: prevYear, growth: (curVal - prevVal) / prevVal, curVal: curVal, prevVal: prevVal, monthCount: monthCount };
+  }
+
   function renderFaturamentoKPIs(data, yearFilter) {
     var kpis = [
       { label: 'Faturamento total', value: fmtBRL(data.totals.revenue), note: yearFilter === 'all' ? '2024 – 2026 (parcial)' : yearFilter + (yearFilter === '2026' ? ' (parcial)' : '') },
       { label: 'Pedidos com valor', value: fmt(data.totals.shipments), note: 'notas de exportação com valor preenchido' },
-      { label: 'Ticket médio', value: data.totals.shipments ? fmtBRL(data.totals.revenue / data.totals.shipments) : fmtBRL(0), note: 'por invoice' }
+      { label: 'Ticket médio', value: data.totals.shipments ? fmtBRL(data.totals.revenue / data.totals.shipments) : fmtBRL(0), note: 'por invoice' },
+      { label: 'Países atendidos', value: fmt(data.topCountries.length), note: 'destinos com valor de nota fiscal' }
     ];
+
+    var yoy = computeFaturamentoYoy(yearFilter);
+    if (yoy) {
+      kpis.push({
+        label: 'Crescimento vs ' + yoy.prevYear,
+        value: (yoy.growth >= 0 ? '+' : '') + pct(yoy.growth),
+        note: 'primeiros ' + yoy.monthCount + ' meses: ' + fmtBRL(yoy.curVal) + ' vs ' + fmtBRL(yoy.prevVal),
+        color: yoy.growth >= 0 ? 'var(--good)' : 'var(--bad)'
+      });
+    } else {
+      kpis.push({ label: 'Crescimento vs ano anterior', value: '—', note: 'sem ano anterior para comparar' });
+    }
+
     var row = document.getElementById('faturamentoKpiRow');
     row.innerHTML = '';
     kpis.forEach(function (k) {
@@ -2010,6 +2057,7 @@
       tile.className = 'kpi fade-in-el';
       var l = document.createElement('div'); l.className = 'kpi-label'; l.textContent = k.label;
       var v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = k.value;
+      if (k.color) v.style.color = k.color;
       var n = document.createElement('div'); n.className = 'kpi-note'; n.textContent = k.note;
       tile.appendChild(l); tile.appendChild(v); tile.appendChild(n);
       row.appendChild(tile);
