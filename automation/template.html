@@ -281,6 +281,7 @@
   .tipo-indireta { color: var(--info); }
   .muted-cell { color: var(--ink-muted); }
   .mono-code { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .sku-hit { background: var(--accent-wash); color: var(--accent); font-weight: 700; border-radius: 2px; padding: 0 1px; }
 
   .status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; white-space: nowrap; }
   .status-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
@@ -2734,6 +2735,23 @@
       return wrap;
     }
 
+    // Destaca o trecho pesquisado no campo "SKU / produto" dentro do nome/código de cada item -
+    // pedidos com muitos produtos (20+ linhas) faziam o item buscado demorar pra achar visualmente
+    // mesmo já filtrado certo (02/09/2026).
+    function highlightMatch(text, query) {
+      var frag = document.createDocumentFragment();
+      if (!query) { frag.appendChild(document.createTextNode(text)); return frag; }
+      var idx = text.toLowerCase().indexOf(query);
+      if (idx === -1) { frag.appendChild(document.createTextNode(text)); return frag; }
+      if (idx > 0) frag.appendChild(document.createTextNode(text.slice(0, idx)));
+      var mark = document.createElement('mark');
+      mark.className = 'sku-hit';
+      mark.textContent = text.slice(idx, idx + query.length);
+      frag.appendChild(mark);
+      if (idx + query.length < text.length) frag.appendChild(document.createTextNode(text.slice(idx + query.length)));
+      return frag;
+    }
+
     function buildDetailRow(o) {
       var tr = document.createElement('tr');
       tr.className = 'detail-row';
@@ -2794,12 +2812,16 @@
       });
       thd.appendChild(thr); t.appendChild(thd);
       var tb = document.createElement('tbody');
+      var qProdutoHighlight = filterProduto.value.trim().toLowerCase();
       o.items.forEach(function (it) {
         var r = document.createElement('tr');
         var change = getItemChange(o.invoice, it.produto);
         if (change) r.className = 'item-row-changed';
-        var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell'; tdC.textContent = it.codigo || '—';
-        var tdP = document.createElement('td'); tdP.textContent = titleCase(it.produto) || '—'; tdP.title = titleCase(it.produto);
+        var codigoDisplay = it.codigo || '—';
+        var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell';
+        tdC.appendChild(highlightMatch(codigoDisplay, qProdutoHighlight));
+        var produtoDisplay = titleCase(it.produto) || '—';
+        var tdP = document.createElement('td'); tdP.appendChild(highlightMatch(produtoDisplay, qProdutoHighlight)); tdP.title = produtoDisplay;
         if (change && change.type === 'novo') {
           var tagNew = document.createElement('span'); tagNew.className = 'item-tag-new'; tagNew.textContent = 'Novo';
           tdP.appendChild(tagNew);
