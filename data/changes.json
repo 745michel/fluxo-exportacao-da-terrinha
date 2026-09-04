@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T17:42:49.312Z",
+  "generatedAt": "2026-09-04T14:03:05.411Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -11,9 +11,11 @@
     "20170585",
     "20170781",
     "20170797",
-    "20170809",
     "20170818",
-    "20170852"
+    "20170867",
+    "20170870",
+    "20170860",
+    "20170866"
   ],
   "itemChanges": [
     {
@@ -80,13 +82,6 @@
       "newVolume": 47
     },
     {
-      "invoice": "20170809",
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
-      "type": "quantidade",
-      "oldVolume": 300,
-      "newVolume": 299
-    },
-    {
       "invoice": "20170818",
       "produto": "MOLHO ARABE COM PIMENTA DA TERRINHA 150 ML - CX 12 / ARABIC PEPPER SAUCE DA TERRINHA 150 ML - BX 12",
       "type": "quantidade",
@@ -94,18 +89,53 @@
       "newVolume": 0
     },
     {
-      "invoice": "20170852",
+      "invoice": "20170867",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
+      "type": "quantidade",
+      "oldVolume": 250,
+      "newVolume": 251
+    },
+    {
+      "invoice": "20170867",
       "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12 / TAPIOCA FLOUR DA TERRINHA 1 KG - BX 12",
       "type": "quantidade",
-      "oldVolume": 70,
+      "oldVolume": 400,
+      "newVolume": 406
+    },
+    {
+      "invoice": "20170867",
+      "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G- FD12 / CHEESE BREAD MIX DA TERRINHA 250 G - FD 12",
+      "type": "quantidade",
+      "oldVolume": 75,
+      "newVolume": 76
+    },
+    {
+      "invoice": "20170870",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
+      "type": "quantidade",
+      "oldVolume": 30,
+      "newVolume": 29
+    },
+    {
+      "invoice": "20170870",
+      "produto": "TORTILLAS DE TAPIOCA ORIGINAL WRAPIOCA 210G",
+      "type": "novo",
+      "oldVolume": 0,
       "newVolume": 5
     },
     {
-      "invoice": "20170852",
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
-      "type": "quantidade",
-      "oldVolume": 490,
-      "newVolume": 20
+      "invoice": "20170870",
+      "produto": "FUBA MIMOSO DA TERRINHA 500 G FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 15
+    },
+    {
+      "invoice": "20170866",
+      "produto": "TAPIOCA DA TERRINHA 70G (LISA) - CX 100 / TAPIOCA FLOUR DA TERRINHA 70G (SMOOTH) - BX 100",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 180
     }
   ],
   "dateChanges": [
@@ -138,6 +168,21 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170867",
+      "oldDate": "2026-09-08T00:00:00.000Z",
+      "newDate": "2026-09-09T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170870",
+      "oldDate": "2026-09-08T00:00:00.000Z",
+      "newDate": "2026-09-11T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170860",
+      "oldDate": "2026-09-08T00:00:00.000Z",
+      "newDate": "2026-09-21T00:00:00.000Z"
     }
   ]
 }
