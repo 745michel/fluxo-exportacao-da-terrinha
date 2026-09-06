@@ -91,17 +91,6 @@ function toNumber(v) {
   return isNaN(n) ? null : n;
 }
 
-// Valores monetários vêm formatados como " R$                        220.840,00 " (símbolo,
-// espaços largos de alinhamento da planilha, milhar com ponto, decimal com vírgula) - toNumber()
-// sozinho falha porque parseFloat não aceita o "R$" na frente. Tira tudo que não é dígito/vírgula/
-// ponto/sinal antes de aplicar a mesma troca de separador pt-BR -> formato numérico.
-function toMoney(v) {
-  if (v === null || v === undefined || v === '') return null;
-  const cleaned = String(v).replace(/[^\d.,-]/g, '').trim();
-  if (!cleaned) return null;
-  return toNumber(cleaned);
-}
-
 // column maps: index is 0-based into row array
 //
 // As 3 abas (2024/2025/2026) têm o MESMO layout de colunas 0-14 (cliente, tipo, pedido, invoice,
@@ -110,15 +99,60 @@ function toMoney(v) {
 // estavam com índices errados (herdados de uma versão antiga da planilha com colunas em outra
 // ordem) e nunca foram atualizados: "volume" lia a coluna de data, "produto" lia a coluna de
 // volume, etc. - por isso o volume acumulado de 2024/2025 aparecia quase zerado no painel.
+//
+// Não tem mais coluna de valor aqui (02/09/2026): o faturamento passou a vir dos XMLs de NFe em
+// notas_fiscais/ (ver loadNotasFiscais), não mais da planilha - a coluna "Valor Nota Fiscal" só
+// tinha ~70% das linhas preenchidas e o usuário preferiu uma fonte mais confiável.
 const SCHEMAS = {
-  2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 17 },
-  // valorInvoice: coluna "Valor Nota Fiscal" (17) - é a única das colunas de valor preenchida de
-  // forma consistente nas 3 abas (~120-150 linhas/ano, uma por invoice, como o volume). A aba
-  // 2025 também tem uma coluna "Valor Invoice" (23), mas ela está praticamente vazia (4 linhas
-  // preenchidas no total) - não usar como fonte de faturamento.
-  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14, valorInvoice: 17 },
-  2024: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, obs: 13, formatoData: 14, valorInvoice: 17 },
+  2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
+  2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
+  2024: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, obs: 13, formatoData: 14 },
 };
+
+// ---------- faturamento (XML de NFe) ----------
+// Substitui a leitura da coluna "Valor Nota Fiscal" da planilha (02/09/2026, a pedido do
+// usuário): ele salva o XML de cada NFe em notas_fiscais/, nomeado "PAIS_INVOICE.xml" (ex.:
+// "PORTUGAL_20170866.xml") - o país no nome é só organizacional, quem liga o valor ao pedido é o
+// invoice. O valor em si vem de dentro do XML (campo <vNF> do total da nota), não do nome do
+// arquivo, pra não depender de digitação manual do valor.
+const NOTAS_DIR = path.join(ROOT, 'notas_fiscais');
+
+function extractVNF(xmlText) {
+  const m = xmlText.match(/<vNF>\s*([\d.]+)\s*<\/vNF>/);
+  return m ? parseFloat(m[1]) : null;
+}
+
+function loadNotasFiscais() {
+  const map = {};
+  if (!fs.existsSync(NOTAS_DIR)) return map;
+  const files = fs.readdirSync(NOTAS_DIR).filter(f => /\.xml$/i.test(f));
+  files.forEach(f => {
+    const base = f.replace(/\.xml$/i, '');
+    const m = base.match(/^(.+)_(\d+)$/);
+    if (!m) {
+      console.log('AVISO: nome de arquivo de NF fora do padrao PAIS_INVOICE.xml, ignorado: ' + f);
+      return;
+    }
+    const invoice = m[2];
+    let xmlText;
+    try {
+      xmlText = fs.readFileSync(path.join(NOTAS_DIR, f), 'utf8');
+    } catch (e) {
+      console.log('AVISO: nao consegui ler ' + f + ': ' + e.message);
+      return;
+    }
+    const vnf = extractVNF(xmlText);
+    if (vnf === null) {
+      console.log('AVISO: nao encontrei <vNF> dentro de ' + f + ' - arquivo ignorado');
+      return;
+    }
+    if (map[invoice] !== undefined) {
+      console.log('AVISO: mais de um arquivo de NF pro invoice ' + invoice + ' - usando o ultimo lido (' + f + ')');
+    }
+    map[invoice] = vnf;
+  });
+  return map;
+}
 
 const BAD_CODIGO = new Set(['#N/A', '#N/D', '#REF!', '#VALOR!', '#NOME?', '#NULO!', '#DIV/0!', '-', '']);
 
@@ -167,7 +201,6 @@ function extractYear(year, filename, codigoFilename) {
         formatoData: schema.formatoData !== undefined ? (r[schema.formatoData] || '').trim() : '',
         obs: schema.obs !== undefined ? (r[schema.obs] || '').trim() : '',
         dataCarreg: parseDateValue(r[schema.dataCarreg], year),
-        valorInvoice: schema.valorInvoice !== undefined ? toMoney(r[schema.valorInvoice]) : null,
         items: [],
       };
       shipments.push(current);
@@ -215,7 +248,7 @@ function normCountry(s) {
 }
 
 // ---------- shipments -> orders / sku rows ----------
-function buildOrders(shipments) {
+function buildOrders(shipments, notasFiscais) {
   return shipments.map((s, i) => ({
     id: i,
     cliente: (s.cliente || '').trim(),
@@ -232,7 +265,7 @@ function buildOrders(shipments) {
     data: s.dataCarreg,
     year: s.year,
     volume: Math.round(s.totalVolume),
-    valorInvoice: (s.valorInvoice === null || s.valorInvoice === undefined) ? null : Math.round(s.valorInvoice * 100) / 100,
+    valorInvoice: (s.invoice && notasFiscais[s.invoice] !== undefined) ? Math.round(notasFiscais[s.invoice] * 100) / 100 : null,
     items: s.items
       .map(it => ({ produto: (it.produto || '').trim(), codigo: (it.codigo || '').trim(), volume: Math.round(it.volume || 0) }))
       .filter(it => it.produto || it.volume),
@@ -444,8 +477,9 @@ function main() {
   const all2025 = extractYear(2025, 'Programação_Exportações_2025.csv', null);
   const all2026 = extractYear(2026, 'Programação_Exportações_2026.csv', 'codigo_2026.csv');
   const shipments = [...all2024, ...all2025, ...all2026];
+  const notasFiscais = loadNotasFiscais();
 
-  const orders = buildOrders(shipments);
+  const orders = buildOrders(shipments, notasFiscais);
   const skuRows = buildSkuRows(orders);
   const summary = buildSummary(skuRows);
 

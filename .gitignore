@@ -3,3 +3,7 @@ automation/logs/
 
 # CSVs intermediários extraídos do Excel a cada rodada - sempre regenerados, não é a fonte real
 data/raw/
+
+# XMLs de NFe (faturamento) - tem dados fiscais/cadastrais sensíveis (CNPJ, valores, endereços) e
+# o repositório é público; só o valor numérico extraído (data/orders.json) entra no git.
+notas_fiscais/
