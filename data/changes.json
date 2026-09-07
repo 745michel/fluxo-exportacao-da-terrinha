@@ -1,6 +1,57 @@
 {
-  "generatedAt": "2026-09-06T19:43:06.558Z",
-  "newInvoices": [],
+  "generatedAt": "2026-09-07T12:07:10.144Z",
+  "newInvoices": [
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07",
+    "2E+07"
+  ],
   "changedInvoices": [
     "20170450",
     "20170451",
@@ -10,11 +61,41 @@
     "20170562",
     "20170585",
     "20170781",
+    "20170802",
+    "20170803",
+    "20170806",
     "20170797",
+    "20170800",
+    "20170804",
+    "20170805",
+    "20170781",
+    "20170793",
+    "20170790",
+    "20170816",
+    "20170810",
+    "20170794",
+    "20170795",
+    "20170812",
+    "20170809",
+    "19052026",
+    "20170826",
+    "20170811",
+    "20170808",
     "20170818",
-    "20170870",
-    "20170860",
-    "20170866"
+    "20170801",
+    "20170813",
+    "20170814",
+    "20170817",
+    "20170820",
+    "20170827",
+    "20170821",
+    "20170819",
+    "20170815",
+    "20170822",
+    "20170823",
+    "20170839",
+    "20170828",
+    "20170852_A (BONIFICADO)"
   ],
   "itemChanges": [
     {
@@ -88,32 +169,11 @@
       "newVolume": 0
     },
     {
-      "invoice": "20170870",
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24 / TAPIOCA FLOUR DA TERRINHA EXP (5 LANGUAGES) 500 G - BX 24",
-      "type": "quantidade",
-      "oldVolume": 30,
-      "newVolume": 29
-    },
-    {
-      "invoice": "20170870",
-      "produto": "TORTILLAS DE TAPIOCA ORIGINAL WRAPIOCA 210G",
+      "invoice": "20170839",
+      "produto": "TORTILLAS DE TAPIOCA ORIGINAL WRAPIOCA 210 G - CX 12",
       "type": "novo",
       "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170870",
-      "produto": "FUBA MIMOSO DA TERRINHA 500 G FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 15
-    },
-    {
-      "invoice": "20170866",
-      "produto": "TAPIOCA DA TERRINHA 70G (LISA) - CX 100 / TAPIOCA FLOUR DA TERRINHA 70G (SMOOTH) - BX 100",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 180
+      "newVolume": 100
     }
   ],
   "dateChanges": [
@@ -148,14 +208,174 @@
       "newDate": "2026-04-27T00:00:00.000Z"
     },
     {
-      "invoice": "20170870",
-      "oldDate": "2026-09-08T00:00:00.000Z",
-      "newDate": "2026-09-11T00:00:00.000Z"
+      "invoice": "20170802",
+      "oldDate": "2026-04-27T00:00:00.000Z",
+      "newDate": null
     },
     {
-      "invoice": "20170860",
-      "oldDate": "2026-09-08T00:00:00.000Z",
-      "newDate": "2026-09-21T00:00:00.000Z"
+      "invoice": "20170803",
+      "oldDate": "2026-04-28T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170806",
+      "oldDate": "2026-04-28T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170800",
+      "oldDate": "2026-04-30T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170804",
+      "oldDate": "2026-05-11T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170805",
+      "oldDate": "2026-05-12T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170781",
+      "oldDate": "2026-05-04T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170793",
+      "oldDate": "2026-05-05T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170790",
+      "oldDate": "2026-05-05T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170816",
+      "oldDate": "2026-05-05T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170810",
+      "oldDate": "2026-05-05T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170794",
+      "oldDate": "2026-05-06T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170795",
+      "oldDate": "2026-05-11T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170812",
+      "oldDate": "2026-05-12T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170809",
+      "oldDate": "2026-05-20T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "19052026",
+      "oldDate": "2026-05-20T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170826",
+      "oldDate": "2026-05-20T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170811",
+      "oldDate": "2026-05-25T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170808",
+      "oldDate": "2026-06-01T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170818",
+      "oldDate": "2026-05-29T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170801",
+      "oldDate": "2026-06-01T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170813",
+      "oldDate": "2026-06-01T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170814",
+      "oldDate": "2026-06-02T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170817",
+      "oldDate": "2026-06-02T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170820",
+      "oldDate": "2026-06-02T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170827",
+      "oldDate": "2026-06-05T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170821",
+      "oldDate": "2026-06-08T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170819",
+      "oldDate": "2026-06-09T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170815",
+      "oldDate": "2026-06-09T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170822",
+      "oldDate": "2026-06-16T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170823",
+      "oldDate": "2026-06-18T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170839",
+      "oldDate": "2026-06-19T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170828",
+      "oldDate": "2026-06-23T00:00:00.000Z",
+      "newDate": null
+    },
+    {
+      "invoice": "20170852_A (BONIFICADO)",
+      "oldDate": "2026-07-30T00:00:00.000Z",
+      "newDate": null
     }
   ]
 }
