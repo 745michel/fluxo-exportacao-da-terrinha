@@ -513,7 +513,7 @@
           </div>
           <div class="pedidos-mini-kpis">
             <div class="mini-kpi"><div class="mini-kpi-label">Pedidos</div><div class="mini-kpi-value" id="skuTotalPedidos">—</div></div>
-            <div class="mini-kpi"><div class="mini-kpi-label">Volume (cx)</div><div class="mini-kpi-value" id="skuTotalVolume">—</div></div>
+            <div class="mini-kpi"><div class="mini-kpi-label" id="skuTotalVolumeLabel">Volume (cx)</div><div class="mini-kpi-value" id="skuTotalVolume">—</div></div>
             <span class="filter-count" id="skuCount"></span>
           </div>
           <div class="sku-scroll">
@@ -2915,9 +2915,7 @@
       var tdVolume = document.createElement('td'); tdVolume.className = 'num';
       var qProdutoVol = filterProduto.value.trim().toLowerCase();
       if (qProdutoVol) {
-        var matchedVolume = o.items.filter(function (it) {
-          return it.produto.toLowerCase().indexOf(qProdutoVol) !== -1 || (it.codigo || '').toLowerCase().indexOf(qProdutoVol) !== -1;
-        }).reduce(function (a, it) { return a + it.volume; }, 0);
+        var matchedVolume = matchedItemVolume(o, qProdutoVol);
         tdVolume.appendChild(document.createTextNode(fmt(matchedVolume)));
         if (matchedVolume !== o.volume) {
           var totalHint = document.createElement('span');
@@ -2952,13 +2950,37 @@
       return tr;
     }
 
+    // Volume de um pedido pra fins de exibição: com busca de produto ativa, só o(s) item(ns) que
+    // batem na busca - usada tanto na coluna Qtd (cx) quanto no total do topo, pra um nunca
+    // divergir do outro (09/09/2026: o total do topo ainda somava o pedido inteiro mesmo com a
+    // coluna já mostrando só o item buscado).
+    function matchedItemVolume(o, qProduto) {
+      if (!qProduto) return o.volume;
+      return o.items.filter(function (it) {
+        return it.produto.toLowerCase().indexOf(qProduto) !== -1 || (it.codigo || '').toLowerCase().indexOf(qProduto) !== -1;
+      }).reduce(function (a, it) { return a + it.volume; }, 0);
+    }
+
     function renderTable() {
       updateSortIndicators();
       var list = getFiltered();
       countEl.textContent = fmt(list.length) + ' de ' + fmt(ORDERS.length) + ' pedidos no total';
-      var totalVolume = list.reduce(function (a, o) { return a + o.volume; }, 0);
+      var qProdutoTotal = filterProduto.value.trim().toLowerCase();
+      var totalItemVolume = list.reduce(function (a, o) { return a + matchedItemVolume(o, qProdutoTotal); }, 0);
+      var totalOrderVolume = list.reduce(function (a, o) { return a + o.volume; }, 0);
       document.getElementById('skuTotalPedidos').textContent = fmt(list.length);
-      document.getElementById('skuTotalVolume').textContent = fmt(totalVolume);
+      var volEl = document.getElementById('skuTotalVolume');
+      volEl.innerHTML = '';
+      volEl.appendChild(document.createTextNode(fmt(totalItemVolume)));
+      if (qProdutoTotal && totalItemVolume !== totalOrderVolume) {
+        var totalVolHint = document.createElement('span');
+        totalVolHint.className = 'muted-cell';
+        totalVolHint.style.marginLeft = '4px';
+        totalVolHint.style.fontSize = '13px';
+        totalVolHint.textContent = '/ ' + fmt(totalOrderVolume) + ' cx nos pedidos';
+        volEl.appendChild(totalVolHint);
+      }
+      document.getElementById('skuTotalVolumeLabel').textContent = qProdutoTotal ? 'Volume do item buscado (cx)' : 'Volume (cx)';
       tbody.innerHTML = '';
       var frag = document.createDocumentFragment();
 
