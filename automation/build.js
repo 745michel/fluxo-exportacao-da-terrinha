@@ -91,6 +91,17 @@ function toNumber(v) {
   return isNaN(n) ? null : n;
 }
 
+// Valores monetários vêm formatados como " R$                        220.840,00 " (símbolo,
+// espaços largos de alinhamento da planilha, milhar com ponto, decimal com vírgula) - toNumber()
+// sozinho falha porque parseFloat não aceita o "R$" na frente. Tira tudo que não é dígito/vírgula/
+// ponto/sinal antes de aplicar a mesma troca de separador pt-BR -> formato numérico.
+function toMoney(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const cleaned = String(v).replace(/[^\d.,-]/g, '').trim();
+  if (!cleaned) return null;
+  return toNumber(cleaned);
+}
+
 // column maps: index is 0-based into row array
 //
 // As 3 abas (2024/2025/2026) têm o MESMO layout de colunas 0-14 (cliente, tipo, pedido, invoice,
@@ -100,9 +111,9 @@ function toNumber(v) {
 // ordem) e nunca foram atualizados: "volume" lia a coluna de data, "produto" lia a coluna de
 // volume, etc. - por isso o volume acumulado de 2024/2025 aparecia quase zerado no painel.
 //
-// Não tem mais coluna de valor aqui (02/09/2026): o faturamento passou a vir dos XMLs de NFe em
-// notas_fiscais/ (ver loadNotasFiscais), não mais da planilha - a coluna "Valor Nota Fiscal" só
-// tinha ~70% das linhas preenchidas e o usuário preferiu uma fonte mais confiável.
+// "Valor Nota Fiscal" (faturamento, usado como reserva - ver mais abaixo) é buscado pelo nome do
+// cabeçalho dentro de extractYear, não listado aqui: índice fixo já quebrou uma vez (volume de
+// 2024/2025) e uma coluna nova inserida na aba de 2026 quebraria de novo se fosse fixo aqui.
 const SCHEMAS = {
   2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
   2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
@@ -110,11 +121,10 @@ const SCHEMAS = {
 };
 
 // ---------- faturamento (XML de NFe) ----------
-// Substitui a leitura da coluna "Valor Nota Fiscal" da planilha (02/09/2026, a pedido do
-// usuário): ele salva o XML de cada NFe em notas_fiscais/, nomeado "PAIS_INVOICE.xml" (ex.:
-// "PORTUGAL_20170866.xml") - o país no nome é só organizacional, quem liga o valor ao pedido é o
-// invoice. O valor em si vem de dentro do XML (campo <vNF> do total da nota), não do nome do
-// arquivo, pra não depender de digitação manual do valor.
+// Fonte preferida (02/09/2026, a pedido do usuário): ele salva o XML de cada NFe em
+// notas_fiscais/, nomeado "PAIS_INVOICE.xml" (ex.: "PORTUGAL_20170866.xml") - o país no nome é só
+// organizacional, quem liga o valor ao pedido é o invoice. O valor em si vem de dentro do XML
+// (campo <vNF> do total da nota), não do nome do arquivo, pra não depender de digitação manual.
 const NOTAS_DIR = path.join(ROOT, 'notas_fiscais');
 
 function extractVNF(xmlText) {
@@ -176,6 +186,12 @@ function extractYear(year, filename, codigoFilename) {
   const schema = SCHEMAS[year];
   const codigoColumn = loadCodigoColumn(codigoFilename);
   let headerIdx = rows.findIndex(r => r.some(cell => cell.trim() === 'Cliente'));
+  // Busca "Valor Nota Fiscal" pelo NOME do cabeçalho, não por índice fixo (02/09/2026): a aba de
+  // 2026 ganhou uma coluna nova ("Nota Fiscal", o número) antes da coluna de valor, empurrando o
+  // índice fixo (17) uma posição pra frente só nessa aba - índice fixo já quebrou o volume de
+  // 2024/2025 uma vez antes por esse mesmo motivo, então esta coluna em especial não confia mais
+  // em número de coluna.
+  const valorInvoiceCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Valor Nota Fiscal');
   const dataRows = rows.slice(headerIdx + 1);
 
   const shipments = [];
@@ -201,6 +217,7 @@ function extractYear(year, filename, codigoFilename) {
         formatoData: schema.formatoData !== undefined ? (r[schema.formatoData] || '').trim() : '',
         obs: schema.obs !== undefined ? (r[schema.obs] || '').trim() : '',
         dataCarreg: parseDateValue(r[schema.dataCarreg], year),
+        valorInvoicePlanilha: valorInvoiceCol !== -1 ? toMoney(r[valorInvoiceCol]) : null,
         items: [],
       };
       shipments.push(current);
@@ -265,7 +282,11 @@ function buildOrders(shipments, notasFiscais) {
     data: s.dataCarreg,
     year: s.year,
     volume: Math.round(s.totalVolume),
-    valorInvoice: (s.invoice && notasFiscais[s.invoice] !== undefined) ? Math.round(notasFiscais[s.invoice] * 100) / 100 : null,
+    valorInvoice: (() => {
+      const doXml = s.invoice && notasFiscais[s.invoice] !== undefined ? notasFiscais[s.invoice] : null;
+      const v = doXml !== null ? doXml : s.valorInvoicePlanilha;
+      return (v === null || v === undefined) ? null : Math.round(v * 100) / 100;
+    })(),
     items: s.items
       .map(it => ({ produto: (it.produto || '').trim(), codigo: (it.codigo || '').trim(), volume: Math.round(it.volume || 0) }))
       .filter(it => it.produto || it.volume),
