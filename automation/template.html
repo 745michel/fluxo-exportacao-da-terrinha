@@ -2909,7 +2909,27 @@
       var tdInvoice = document.createElement('td'); tdInvoice.className = 'mono-code'; tdInvoice.textContent = o.invoice || '—';
       var tdCliente = document.createElement('td'); tdCliente.textContent = titleCase(o.cliente) || '—';
       var tdPais = document.createElement('td'); if (o.pais) tdPais.appendChild(buildCountryLabel(o.pais)); else tdPais.textContent = '—';
-      var tdVolume = document.createElement('td'); tdVolume.className = 'num'; tdVolume.textContent = fmt(o.volume);
+      // Com busca de produto ativa, mostra o volume só do(s) item(ns) que bateram na busca, não o
+      // total do pedido (09/09/2026) - um pedido com 10 produtos mostrava o total de todos, não o
+      // do item que a pessoa realmente estava procurando.
+      var tdVolume = document.createElement('td'); tdVolume.className = 'num';
+      var qProdutoVol = filterProduto.value.trim().toLowerCase();
+      if (qProdutoVol) {
+        var matchedVolume = o.items.filter(function (it) {
+          return it.produto.toLowerCase().indexOf(qProdutoVol) !== -1 || (it.codigo || '').toLowerCase().indexOf(qProdutoVol) !== -1;
+        }).reduce(function (a, it) { return a + it.volume; }, 0);
+        tdVolume.appendChild(document.createTextNode(fmt(matchedVolume)));
+        if (matchedVolume !== o.volume) {
+          var totalHint = document.createElement('span');
+          totalHint.className = 'muted-cell';
+          totalHint.style.marginLeft = '4px';
+          totalHint.textContent = '/ ' + fmt(o.volume);
+          tdVolume.appendChild(totalHint);
+        }
+        tdVolume.title = 'Volume do item buscado · total do pedido: ' + fmt(o.volume) + ' cx';
+      } else {
+        tdVolume.textContent = fmt(o.volume);
+      }
 
       var tdTipo = document.createElement('td');
       var normTipo = normalizeTipo(o.tipo);
