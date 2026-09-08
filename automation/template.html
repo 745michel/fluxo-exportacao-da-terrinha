@@ -2530,9 +2530,19 @@
   function getPendingValidations() {
     try { return JSON.parse(localStorage.getItem(VALIDATE_PENDING_KEY) || '{}'); } catch (e) { return {}; }
   }
+  // Guarda a ASSINATURA da mudança validada (data + itens), não só "true" (08/09/2026): um pedido
+  // pode ser validado, ficar limpo, e DEPOIS mudar de novo (novo item, nova data preenchida) - se
+  // guardasse só "true" o botão continuaria dizendo "Validado" pra sempre, mesmo essa mudança nova
+  // nunca tendo sido revisada. Comparando a assinatura, uma mudança diferente da já validada volta
+  // a mostrar "Validar".
+  function computeChangeSignature(invoice) {
+    var dc = getDateChange(invoice);
+    var items = CHANGES.itemChanges.filter(function (c) { return c.invoice === invoice; });
+    return JSON.stringify({ dc: dc, items: items });
+  }
   function markValidationPending(invoice) {
     var pending = getPendingValidations();
-    pending[invoice] = true;
+    pending[invoice] = computeChangeSignature(invoice);
     try { localStorage.setItem(VALIDATE_PENDING_KEY, JSON.stringify(pending)); } catch (e) {}
   }
   function downloadValidationMarkerFallback(invoice, payload) {
@@ -2577,7 +2587,7 @@
         ? 'Marcado como revisado. Se o destaque não sumir na próxima atualização, clique de novo.'
         : 'Marca esta alteração como revisada — some na próxima atualização automática';
     }
-    setLabel(!!getPendingValidations()[invoice]);
+    setLabel(getPendingValidations()[invoice] === computeChangeSignature(invoice));
     btn.addEventListener('click', function (ev) {
       ev.stopPropagation();
       requireValidationPassword().then(function (allowed) {
