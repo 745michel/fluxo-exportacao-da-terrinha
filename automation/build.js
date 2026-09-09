@@ -192,6 +192,9 @@ function extractYear(year, filename, codigoFilename) {
   // 2024/2025 uma vez antes por esse mesmo motivo, então esta coluna em especial não confia mais
   // em número de coluna.
   const valorInvoiceCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Valor Nota Fiscal');
+  // Só existem na aba 2026 (09/09/2026) - busca por nome também, mesmo motivo do valorInvoiceCol.
+  const pedidoTransferenciaCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Pedido de Transferência');
+  const pedidoCompraCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Pedido de Compra');
   const dataRows = rows.slice(headerIdx + 1);
 
   const shipments = [];
@@ -218,6 +221,8 @@ function extractYear(year, filename, codigoFilename) {
         obs: schema.obs !== undefined ? (r[schema.obs] || '').trim() : '',
         dataCarreg: parseDateValue(r[schema.dataCarreg], year),
         valorInvoicePlanilha: valorInvoiceCol !== -1 ? toMoney(r[valorInvoiceCol]) : null,
+        pedidoTransferencia: pedidoTransferenciaCol !== -1 ? (r[pedidoTransferenciaCol] || '').trim() : '',
+        pedidoCompra: pedidoCompraCol !== -1 ? (r[pedidoCompraCol] || '').trim() : '',
         items: [],
       };
       shipments.push(current);
@@ -279,6 +284,8 @@ function buildOrders(shipments, notasFiscais) {
     etiquetagem: (s.etiquetagem || '').trim(),
     formatoData: (s.formatoData || '').trim(),
     obs: (s.obs || '').trim(),
+    pedidoTransferencia: (s.pedidoTransferencia || '').trim(),
+    pedidoCompra: (s.pedidoCompra || '').trim(),
     data: s.dataCarreg,
     year: s.year,
     volume: Math.round(s.totalVolume),

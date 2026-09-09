@@ -2894,6 +2894,8 @@
 
       var grid = document.createElement('div'); grid.className = 'detail-grid';
       grid.appendChild(buildDetailField('Pedido Bluesoft', o.pedido));
+      if (o.pedidoTransferencia) grid.appendChild(buildDetailField('Pedido de Transferência', o.pedidoTransferencia));
+      if (o.pedidoCompra) grid.appendChild(buildDetailField('Pedido de Compra', o.pedidoCompra));
       var detailDateChange = getDateChange(o.invoice);
       if (detailDateChange) {
         var dateFrag = document.createElement('span');
