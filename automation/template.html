@@ -395,6 +395,7 @@
   .detail-items th:nth-child(2), .detail-items td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; }
   .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .loja-cell { border-radius: 4px; }
   .detail-items tfoot td { border-top: 1px solid var(--border); font-weight: 650; color: var(--ink); padding-top: 7px; }
 
   .long-table table { table-layout: fixed; }
@@ -1062,6 +1063,10 @@
   }
 
   var TIPO_CLASS = { 'DIRETA': 'tipo-direta', 'EXPORTAÇÃO DIRETA': 'tipo-direta', 'TRADE': 'tipo-trade', 'INDIRETA': 'tipo-indireta' };
+  // Cores fixas pros valores de Loja já conhecidos (09/09/2026); LOJA_COLOR_DEFAULT cobre qualquer
+  // valor novo que apareça na planilha no futuro, pra nunca ficar sem cor.
+  var LOJA_COLORS = { 'MATRIZ': 'var(--info-wash)', 'PEGAR DO ESTOQUE': 'var(--good-wash)' };
+  var LOJA_COLOR_DEFAULT = 'var(--other-wash)';
 
   function formatDate(iso) {
     if (!iso) return '—';
@@ -2983,7 +2988,8 @@
         } else {
           tdV.textContent = fmt(it.volume);
         }
-        var tdL = document.createElement('td'); tdL.className = it.loja ? '' : 'muted-cell'; tdL.textContent = it.loja || '—';
+        var tdL = document.createElement('td'); tdL.className = it.loja ? 'loja-cell' : 'muted-cell'; tdL.textContent = it.loja || '—';
+        if (it.loja) tdL.style.background = LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT;
         r.appendChild(tdC); r.appendChild(tdP); r.appendChild(tdV); r.appendChild(tdL);
         tb.appendChild(r);
       });
