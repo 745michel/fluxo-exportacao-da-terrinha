@@ -168,11 +168,12 @@ function loadNotasFiscais() {
 const HEADER_CANDIDATES = {
   cliente: ['Cliente'],
   tipo: ['Tipo de Exportação'],
-  pedido: ['Pedido Bluesoft'],
+  pedido: ['Pedido Bluesoft', 'Pedido Cliente'],
   invoice: ['Invoice'],
   dataCarreg: ['Data Carregamento / Entrega da Mercadoria'],
   volume: ['Volume Cxs'],
   produto: ['Descrição Produto'],
+  loja: ['LOJA', 'Loja'],
   pais: ['País'],
   estufagem: ['Tipo Estufagem'],
   agenteCarga: ['Agente de Carga', 'Agente'],
@@ -256,8 +257,12 @@ function extractYear(year, filename, codigoFilename) {
     if (!current) continue;
     const vol = toNumber(r[cols.volume]);
     const produto = (r[cols.produto] || '').trim();
+    // Loja (09/09/2026): ao contrário dos outros campos daqui, varia POR ITEM dentro do mesmo
+    // pedido/invoice (ex.: um produto "MATRIZ", outro "PEGAR DO ESTOQUE") - por isso é lida linha a
+    // linha, junto com produto/volume, e não uma vez só no cabeçalho do pedido.
+    const loja = cols.loja !== undefined ? (r[cols.loja] || '').trim() : '';
     if (vol !== null || produto !== '') {
-      current.items.push({ volume: vol || 0, produto, codigo: codigo || '' });
+      current.items.push({ volume: vol || 0, produto, codigo: codigo || '', loja });
     }
   }
 
@@ -321,7 +326,7 @@ function buildOrders(shipments, notasFiscais) {
       return (v === null || v === undefined) ? null : Math.round(v * 100) / 100;
     })(),
     items: s.items
-      .map(it => ({ produto: (it.produto || '').trim(), codigo: (it.codigo || '').trim(), volume: Math.round(it.volume || 0) }))
+      .map(it => ({ produto: (it.produto || '').trim(), codigo: (it.codigo || '').trim(), volume: Math.round(it.volume || 0), loja: (it.loja || '').trim() }))
       .filter(it => it.produto || it.volume),
   }));
 }

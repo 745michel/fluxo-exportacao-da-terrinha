@@ -393,7 +393,8 @@
   .detail-items table { font-size: 11px; table-layout: fixed; }
   .detail-items th:nth-child(1), .detail-items td:nth-child(1) { width: 66px; white-space: nowrap; padding-right: 14px; }
   .detail-items th:nth-child(2), .detail-items td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; }
+  .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; }
+  .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .detail-items tfoot td { border-top: 1px solid var(--border); font-weight: 650; color: var(--ink); padding-top: 7px; }
 
   .long-table table { table-layout: fixed; }
@@ -2951,7 +2952,7 @@
       itemsWrap.appendChild(itemsLabel);
       var t = document.createElement('table');
       var thd = document.createElement('thead'); var thr = document.createElement('tr');
-      ['SKU', 'Produto', 'Volume (cx)'].forEach(function (h, i) {
+      ['SKU', 'Produto', 'Volume (cx)', 'Loja'].forEach(function (h, i) {
         var th = document.createElement('th'); if (i === 2) th.className = 'num'; th.textContent = h; thr.appendChild(th);
       });
       thd.appendChild(thr); t.appendChild(thd);
@@ -2978,7 +2979,8 @@
         } else {
           tdV.textContent = fmt(it.volume);
         }
-        r.appendChild(tdC); r.appendChild(tdP); r.appendChild(tdV);
+        var tdL = document.createElement('td'); tdL.className = it.loja ? '' : 'muted-cell'; tdL.textContent = it.loja || '—';
+        r.appendChild(tdC); r.appendChild(tdP); r.appendChild(tdV); r.appendChild(tdL);
         tb.appendChild(r);
       });
       t.appendChild(tb);
@@ -2986,7 +2988,8 @@
       var tf = document.createElement('tfoot'); var tfr = document.createElement('tr');
       var tfLabel = document.createElement('td'); tfLabel.colSpan = 2; tfLabel.textContent = 'Total do pedido';
       var tfVol = document.createElement('td'); tfVol.className = 'num'; tfVol.textContent = fmt(itemsTotal);
-      tfr.appendChild(tfLabel); tfr.appendChild(tfVol); tf.appendChild(tfr);
+      var tfLoja = document.createElement('td');
+      tfr.appendChild(tfLabel); tfr.appendChild(tfVol); tfr.appendChild(tfLoja); tf.appendChild(tfr);
       t.appendChild(tf);
       itemsWrap.appendChild(t);
       inner.appendChild(itemsWrap);
