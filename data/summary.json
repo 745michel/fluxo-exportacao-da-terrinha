@@ -1,12 +1,12 @@
 {
   "totals": {
     "shipments": 415,
-    "volume": 466037
+    "volume": 466992
   },
   "byYear": {
     "2024": 155264,
     "2025": 168472,
-    "2026": 142301
+    "2026": 143256
   },
   "monthlySeries": [
     {
@@ -171,7 +171,7 @@
     },
     {
       "month": "2026-09",
-      "volume": 17710,
+      "volume": 18665,
       "shipments": 18
     },
     {
@@ -184,47 +184,47 @@
     {
       "pais": "PORTUGAL",
       "volume": 258357,
-      "share": 0.5598771705894208
+      "share": 0.5587208698811439
     },
     {
       "pais": "EUA",
       "volume": 31709,
-      "share": 0.06871555716400153
+      "share": 0.06857364059445338
     },
     {
       "pais": "IRLANDA",
-      "volume": 19321,
-      "share": 0.04186991958010892
+      "volume": 20271,
+      "share": 0.04383790937873047
     },
     {
       "pais": "ITÁLIA",
       "volume": 16255,
-      "share": 0.035225689290133554
+      "share": 0.03515293853047525
     },
     {
       "pais": "MÉXICO",
       "volume": 15600,
-      "share": 0.03380625979243823
+      "share": 0.03373644054601131
     },
     {
       "pais": "JAPÃO",
       "volume": 14881,
-      "share": 0.0322481379468765
+      "share": 0.03218153665161502
     },
     {
       "pais": "PARAGUAI",
       "volume": 13890,
-      "share": 0.030100573622882505
+      "share": 0.030038407640006228
     },
     {
       "pais": "ALEMANHA",
       "volume": 12509,
-      "share": 0.027107852804077556
+      "share": 0.02705186761474715
     },
     {
       "pais": "OUTROS",
-      "volume": 78931,
-      "share": 0.1710488392100604,
+      "volume": 78936,
+      "share": 0.17070638916281725,
       "isOther": true
     }
   ],
@@ -232,47 +232,47 @@
     {
       "cliente": "GLEZ",
       "volume": 184783,
-      "share": 0.39649856127303196
+      "share": 0.39568772056052354
     },
     {
       "cliente": "MALOCA",
       "volume": 57942,
-      "share": 0.12432918416348916
+      "share": 0.12407493061979648
     },
     {
       "cliente": "VISALIA",
       "volume": 23085,
-      "share": 0.049534693597289486
+      "share": 0.04943339500462535
     },
     {
       "cliente": "EB EXPRESS",
       "volume": 21261,
-      "share": 0.04562084126367649
+      "share": 0.045527546510432726
     },
     {
       "cliente": "MC IRLANDA",
-      "volume": 19321,
-      "share": 0.04145808165446091
+      "volume": 20271,
+      "share": 0.04340759584746634
     },
     {
       "cliente": "FRESH TROPICAL",
       "volume": 17404,
-      "share": 0.03734467434989067
+      "share": 0.03726830438208792
     },
     {
       "cliente": "SUCOS DO BRASIL",
       "volume": 11807,
-      "share": 0.025334898302066144
+      "share": 0.025283088361256725
     },
     {
       "cliente": "MONTANA",
       "volume": 9553,
-      "share": 0.020498372446822892
+      "share": 0.020456453215472643
     },
     {
       "cliente": "OUTROS",
-      "volume": 120881,
-      "share": 0.2593806929492723,
+      "volume": 120886,
+      "share": 0.2588609654983383,
       "isOther": true
     }
   ],
@@ -280,70 +280,70 @@
     {
       "produto": "TAPIOCA DA TERRINHA EXP 500G",
       "volume": 61691,
-      "share": 0.13237360982067947
+      "share": 0.13210290540309041
     },
     {
       "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G",
       "volume": 61053,
-      "share": 0.13100461980486527
+      "share": 0.1307367149758454
     },
     {
       "produto": "TAPIOCA DA TERRINHA 500G",
       "volume": 34456,
-      "share": 0.07393404386347006
+      "share": 0.07378284852845444
     },
     {
       "produto": "TAPIOCA DA TERRINHA VM EXP 500G",
       "volume": 32518,
-      "share": 0.06977557575900625
+      "share": 0.06963288450337479
     },
     {
       "produto": "FAROFA PRONTA DA TERRINHA TRADICIONAL 400 G",
-      "volume": 31752,
-      "share": 0.06813192943907888
+      "volume": 31832,
+      "share": 0.0681639085894405
     },
     {
       "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500G",
       "volume": 26605,
-      "share": 0.05708774196040228
+      "share": 0.05697099736183917
     },
     {
       "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G",
       "volume": 23294,
-      "share": 0.04998315584384931
+      "share": 0.04988094014458492
     },
     {
       "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G",
-      "volume": 14597,
-      "share": 0.03132154743078339
+      "volume": 14697,
+      "share": 0.031471631205673756
     },
     {
       "produto": "FLOCAO DE MILHO DA TERRINHA 400G",
-      "volume": 13968,
-      "share": 0.029971869186352158
+      "volume": 14018,
+      "share": 0.03001764484188166
     },
     {
       "produto": "TAPIOCA DA TERRINHA 1 KG",
       "volume": 13397,
-      "share": 0.02874664457972221
+      "share": 0.028687857607839106
     },
     {
       "produto": "OUTROS",
-      "volume": 152706,
-      "share": 0.3276692623117907,
+      "volume": 153431,
+      "share": 0.3285516668379758,
       "isOther": true
     }
   ],
   "byTipo": [
     {
       "tipo": "DIRETA",
-      "volume": 423632,
-      "share": 0.9090093705006255
+      "volume": 424582,
+      "share": 0.9091847397814096
     },
     {
       "tipo": "TRADE",
-      "volume": 42405,
-      "share": 0.09099062949937452
+      "volume": 42410,
+      "share": 0.09081526021859047
     }
   ],
   "countryCount": 30,

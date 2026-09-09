@@ -102,12 +102,21 @@ function Find-SheetByNormalizedName {
     return $null
 }
 
+# Copia pra um arquivo local antes de abrir no Excel (09/09/2026) - o arquivo original vive numa
+# pasta sincronizada do OneDrive, e em 09/09/2026 o Excel COM passou a recusar abrir o caminho
+# original direto ("nao pode acessar o arquivo", mesmo com o conteudo ja baixado e legivel via
+# leitura de arquivo comum) - o motivo exato nunca ficou claro (não era Modo de Exibicao Protegida,
+# nem OneDrive fechado, nem timing), mas uma cópia simples pra pasta comum sempre abriu sem erro
+# nos testes. Copiar evita esse problema de vez, sem depender do estado do OneDrive.
+$localCopy = Join-Path $env:TEMP "fluxo_exportacao_leitura.xlsx"
+Copy-Item -LiteralPath $ExcelPath -Destination $localCopy -Force
+
 $excel = New-Object -ComObject Excel.Application
 $excel.Visible = $false
 $excel.DisplayAlerts = $false
 $workbook = $null
 try {
-    $workbook = $excel.Workbooks.Open($ExcelPath, [Type]::Missing, $true)  # ReadOnly = $true
+    $workbook = $excel.Workbooks.Open($localCopy, [Type]::Missing, $true)  # ReadOnly = $true
 
     $sheetMap = @{
         2024 = "Programação Exportações 2024"
@@ -143,4 +152,5 @@ finally {
     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null
     [System.GC]::Collect()
     [System.GC]::WaitForPendingFinalizers()
+    Remove-Item -LiteralPath $localCopy -Force -ErrorAction SilentlyContinue
 }
