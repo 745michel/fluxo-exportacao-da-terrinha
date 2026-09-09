@@ -746,6 +746,13 @@
     }).join(' ');
   }
 
+  // Sem isso, buscar "Japao"/"Italia" (sem acento - forma mais natural de digitar) não achava
+  // "Japão"/"Itália" no filtro de país em lugar nenhum do painel (09/09/2026) - normaliza os dois
+  // lados da comparação (nome do país e o que a pessoa digitou) removendo acento antes de comparar.
+  function stripAccents(s) {
+    return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+
   /* ---------- Flag icons (drawn as SVG — emoji flags don't render reliably on Windows) ---------- */
   var FLAG_SPEC = {
     'ALEMANHA': { t: 'h', c: ['#000000', '#DD0000', '#FFCE00'] },
@@ -1076,8 +1083,8 @@
   // countryFilter (09/09/2026, mesmo ajuste feito no card equivalente da aba Faturamento): sem
   // isso o crescimento sempre comparava o total geral, mesmo com um país selecionado no filtro.
   function computeVolumeYoy(yearFilter, countryFilter) {
-    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
-    function matchesCountry(r) { return !countryQ || titleCase(r.pais).toLowerCase().indexOf(countryQ) !== -1; }
+    var countryQ = (countryFilter && countryFilter !== 'all') ? stripAccents(countryFilter.trim().toLowerCase()) : '';
+    function matchesCountry(r) { return !countryQ || stripAccents(titleCase(r.pais).toLowerCase()).indexOf(countryQ) !== -1; }
 
     var years = Object.keys(DATA.byYear).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
     if (years.length < 2) return null;
@@ -1709,7 +1716,7 @@
     // Campo de país agora é texto livre (autocompletar) - '' e 'all' significam "sem filtro";
     // qualquer outra coisa é comparada por trecho, sem diferenciar maiúscula/minúscula/acento
     // exato, pra digitar "portugal" já filtrar "PORTUGAL" sem precisar escrever igualzinho.
-    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    var countryQ = (countryFilter && countryFilter !== 'all') ? stripAccents(countryFilter.trim().toLowerCase()) : '';
     var rows = SKU_ROWS.filter(function (r) {
       if (yearFilter !== 'all' && String(r.year) !== yearFilter) return false;
       if (monthFilter !== 'all') {
@@ -1718,7 +1725,7 @@
         var mk = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
         if (mk !== monthFilter) return false;
       }
-      if (countryQ && titleCase(r.pais).toLowerCase().indexOf(countryQ) === -1) return false;
+      if (countryQ && stripAccents(titleCase(r.pais).toLowerCase()).indexOf(countryQ) === -1) return false;
       return true;
     });
 
@@ -2020,7 +2027,7 @@
      de fora do total, não conta como zero. */
   function computeFaturamento(yearFilter, monthFilter, countryFilter) {
     monthFilter = monthFilter || 'all';
-    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    var countryQ = (countryFilter && countryFilter !== 'all') ? stripAccents(countryFilter.trim().toLowerCase()) : '';
     var orders = ORDERS.filter(function (o) {
       if (o.valorInvoice == null) return false;
       if (yearFilter !== 'all' && String(o.year) !== yearFilter) return false;
@@ -2030,7 +2037,7 @@
         var mk = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
         if (mk !== monthFilter) return false;
       }
-      if (countryQ && titleCase(o.pais).toLowerCase().indexOf(countryQ) === -1) return false;
+      if (countryQ && stripAccents(titleCase(o.pais).toLowerCase()).indexOf(countryQ) === -1) return false;
       return true;
     });
 
@@ -2075,11 +2082,11 @@
   // BY_YEAR_REVENUE (sem filtro nenhum), então filtrar por país em qualquer outro card da aba não
   // refletia nesse gráfico nem na comparação mês a mês por ano.
   function computeByYearRevenue(countryFilter) {
-    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    var countryQ = (countryFilter && countryFilter !== 'all') ? stripAccents(countryFilter.trim().toLowerCase()) : '';
     var byYear = {};
     ORDERS.forEach(function (o) {
       if (o.valorInvoice == null) return;
-      if (countryQ && titleCase(o.pais).toLowerCase().indexOf(countryQ) === -1) return;
+      if (countryQ && stripAccents(titleCase(o.pais).toLowerCase()).indexOf(countryQ) === -1) return;
       byYear[o.year] = (byYear[o.year] || 0) + o.valorInvoice;
     });
     return byYear;
@@ -2093,8 +2100,8 @@
   // selecionado - filtrando "Alemanha" mostrava o faturamento só da Alemanha no card de total, mas
   // o crescimento comparava o Brasil inteiro contra o Brasil inteiro, sem relação com o filtro.
   function computeFaturamentoYoy(yearFilter, countryFilter) {
-    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
-    function matchesCountry(o) { return !countryQ || titleCase(o.pais).toLowerCase().indexOf(countryQ) !== -1; }
+    var countryQ = (countryFilter && countryFilter !== 'all') ? stripAccents(countryFilter.trim().toLowerCase()) : '';
+    function matchesCountry(o) { return !countryQ || stripAccents(titleCase(o.pais).toLowerCase()).indexOf(countryQ) !== -1; }
 
     var years = Object.keys(BY_YEAR_REVENUE).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
     if (years.length < 2) return null;
@@ -2774,6 +2781,7 @@
       { key: 'cliente', label: 'Cliente', sortable: true },
       { key: 'pais', label: 'País', sortable: true },
       { key: 'volume', label: 'Qtd (cx)', sortable: true, num: true },
+      { key: 'valorInvoice', label: 'Valor NF', sortable: true, num: true },
       { key: 'tipo', label: 'Tipo', sortable: false }
     ];
 
@@ -2815,7 +2823,7 @@
       var statuses = checkedValues('status');
       var years = checkedValues('year');
       var tipos = checkedValues('tipo');
-      var country = countrySelect.value.trim().toLowerCase();
+      var country = stripAccents(countrySelect.value.trim().toLowerCase());
       var qCliente = filterCliente.value.trim().toLowerCase();
       var qPedido = filterPedido.value.trim().toLowerCase();
       var qInvoice = filterInvoice.value.trim().toLowerCase();
@@ -2825,7 +2833,7 @@
         if (years.length && years.indexOf(String(o.year)) === -1) return false;
         if (statuses.length && statuses.indexOf(getStatus(o.data)) === -1) return false;
         if (tipos.length && tipos.indexOf(normalizeTipo(o.tipo)) === -1) return false;
-        if (country && titleCase(o.pais).toLowerCase().indexOf(country) === -1) return false;
+        if (country && stripAccents(titleCase(o.pais).toLowerCase()).indexOf(country) === -1) return false;
         if (qCliente && o.cliente.toLowerCase().indexOf(qCliente) === -1) return false;
         if (qPedido && o.pedido.toLowerCase().indexOf(qPedido) === -1) return false;
         if (qInvoice && o.invoice.toLowerCase().indexOf(qInvoice) === -1) return false;
@@ -2845,6 +2853,9 @@
           bv = b.data ? new Date(b.data).getTime() : -Infinity;
         } else if (sortState.key === 'volume') {
           av = a.volume; bv = b.volume;
+        } else if (sortState.key === 'valorInvoice') {
+          av = a.valorInvoice == null ? -1 : a.valorInvoice;
+          bv = b.valorInvoice == null ? -1 : b.valorInvoice;
         } else {
           av = (a[sortState.key] || '').toLowerCase();
           bv = (b[sortState.key] || '').toLowerCase();
@@ -3052,6 +3063,10 @@
         tdVolume.textContent = fmt(o.volume);
       }
 
+      var tdValorNF = document.createElement('td');
+      tdValorNF.className = o.valorInvoice != null ? 'num' : 'num muted-cell';
+      tdValorNF.textContent = o.valorInvoice != null ? fmtBRL(o.valorInvoice) : '—';
+
       var tdTipo = document.createElement('td');
       var normTipo = normalizeTipo(o.tipo);
       if (normTipo !== 'SEM TIPO') {
@@ -3064,7 +3079,7 @@
         tdTipo.textContent = '—';
       }
 
-      [tdChev, tdStatus, tdData, tdInvoice, tdCliente, tdPais, tdVolume, tdTipo].forEach(function (td) { tr.appendChild(td); });
+      [tdChev, tdStatus, tdData, tdInvoice, tdCliente, tdPais, tdVolume, tdValorNF, tdTipo].forEach(function (td) { tr.appendChild(td); });
 
       function toggle() { expanded[o.id] = !expanded[o.id]; renderTable(); }
       tr.addEventListener('click', toggle);
