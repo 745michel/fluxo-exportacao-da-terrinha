@@ -3109,10 +3109,15 @@
       var tdValorNF = document.createElement('td');
       tdValorNF.className = o.valorInvoice != null ? 'num' : 'num muted-cell';
       if (o.valorInvoice != null) {
-        tdValorNF.textContent = fmtBRL(o.valorInvoice);
-        // Número da NF vira dica (passar o mouse), não texto sempre visível (10/09/2026) - deixar
-        // sempre visível deixava a tabela larga demais, forçando rolagem horizontal.
-        if (o.numeroNF) tdValorNF.title = 'NF ' + o.numeroNF;
+        // Número da NF numa linha própria embaixo do valor, não do lado (10/09/2026) - assim
+        // continua visível sem alargar a coluna e sem precisar de rolagem horizontal.
+        var valorLine = document.createElement('div'); valorLine.textContent = fmtBRL(o.valorInvoice);
+        tdValorNF.appendChild(valorLine);
+        if (o.numeroNF) {
+          var nfLine = document.createElement('div'); nfLine.className = 'muted-cell'; nfLine.style.fontSize = '10px';
+          nfLine.textContent = 'NF ' + o.numeroNF;
+          tdValorNF.appendChild(nfLine);
+        }
       } else {
         tdValorNF.textContent = '—';
       }
