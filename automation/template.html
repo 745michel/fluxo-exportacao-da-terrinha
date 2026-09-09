@@ -1073,7 +1073,12 @@
   // da aba Faturamento (09/09/2026) - 2026 só tem dado até setembro, comparar o ano cheio de 2025
   // contra o parcial de 2026 sempre pareceria queda, mesmo crescendo. Usa SKU_ROWS (não DATA.byYear
   // filtrado) porque precisa do detalhe mês a mês, não só o total do ano.
-  function computeVolumeYoy(yearFilter) {
+  // countryFilter (09/09/2026, mesmo ajuste feito no card equivalente da aba Faturamento): sem
+  // isso o crescimento sempre comparava o total geral, mesmo com um país selecionado no filtro.
+  function computeVolumeYoy(yearFilter, countryFilter) {
+    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    function matchesCountry(r) { return !countryQ || titleCase(r.pais).toLowerCase().indexOf(countryQ) !== -1; }
+
     var years = Object.keys(DATA.byYear).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
     if (years.length < 2) return null;
     var targetYear = yearFilter === 'all' ? years[years.length - 1] : parseInt(yearFilter, 10);
@@ -1083,7 +1088,7 @@
 
     var targetMonths = {};
     SKU_ROWS.forEach(function (r) {
-      if (r.year !== targetYear || !r.data) return;
+      if (r.year !== targetYear || !r.data || !matchesCountry(r)) return;
       targetMonths[new Date(r.data).getUTCMonth() + 1] = true;
     });
     var monthCount = Object.keys(targetMonths).length;
@@ -1091,7 +1096,7 @@
 
     var curVal = 0, prevVal = 0;
     SKU_ROWS.forEach(function (r) {
-      if (!r.data) return;
+      if (!r.data || !matchesCountry(r)) return;
       var m = new Date(r.data).getUTCMonth() + 1;
       if (!targetMonths[m]) return;
       if (r.year === targetYear) curVal += r.volume;
@@ -1101,7 +1106,7 @@
     return { targetYear: targetYear, prevYear: prevYear, growth: (curVal - prevVal) / prevVal, curVal: curVal, prevVal: prevVal, monthCount: monthCount };
   }
 
-  function renderKPIs(data, yearFilter) {
+  function renderKPIs(data, yearFilter, countryFilter) {
     var kpis = [
       { label: 'Volume total (cx)', value: fmt(data.totals.volume), note: yearFilter === 'all' ? '2024 – 2026 (parcial)' : yearFilter + (yearFilter === '2026' ? ' (parcial)' : '') },
       { label: 'Embarques registrados', value: fmt(data.totals.shipments), note: 'notas de exportação' },
@@ -1109,7 +1114,7 @@
       { label: 'Clientes ativos', value: fmt(data.clientCount), note: 'compradores distintos' }
     ];
 
-    var yoyVol = computeVolumeYoy(yearFilter);
+    var yoyVol = computeVolumeYoy(yearFilter, countryFilter);
     if (yoyVol) {
       kpis.push({
         label: 'Crescimento vs ' + yoyVol.prevYear,
@@ -1944,7 +1949,7 @@
     var yearLabel = yearFilter === 'all' ? '2024–2026' : yearFilter;
     var scopeLabel = yearLabel + (monthFilter !== 'all' ? ' · ' + monthKeyLabel(monthFilter) : '') + ((countryFilter && countryFilter !== 'all') ? ' · ' + titleCase(countryFilter) : '');
 
-    renderKPIs(data, yearFilter);
+    renderKPIs(data, yearFilter, countryFilter);
     lastTrendSeries = data.monthlySeries;
     updateTrendSection();
     renderYearChart(yearFilter);
@@ -2048,7 +2053,13 @@
   // 2026 só tem dado até setembro, então comparar o ano cheio de 2025 contra o parcial de 2026
   // sempre pareceria queda, mesmo crescendo. Isolar os meses que o ano-alvo realmente tem dado e
   // somar só esses mesmos meses no ano anterior dá uma comparação justa.
-  function computeFaturamentoYoy(yearFilter) {
+  // countryFilter (09/09/2026): o card comparava sempre contra o total geral, mesmo com um país
+  // selecionado - filtrando "Alemanha" mostrava o faturamento só da Alemanha no card de total, mas
+  // o crescimento comparava o Brasil inteiro contra o Brasil inteiro, sem relação com o filtro.
+  function computeFaturamentoYoy(yearFilter, countryFilter) {
+    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    function matchesCountry(o) { return !countryQ || titleCase(o.pais).toLowerCase().indexOf(countryQ) !== -1; }
+
     var years = Object.keys(BY_YEAR_REVENUE).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
     if (years.length < 2) return null;
     var targetYear = yearFilter === 'all' ? years[years.length - 1] : parseInt(yearFilter, 10);
@@ -2058,7 +2069,7 @@
 
     var targetMonths = {};
     ORDERS.forEach(function (o) {
-      if (o.valorInvoice == null || o.year !== targetYear || !o.data) return;
+      if (o.valorInvoice == null || o.year !== targetYear || !o.data || !matchesCountry(o)) return;
       targetMonths[new Date(o.data).getUTCMonth() + 1] = true;
     });
     var monthCount = Object.keys(targetMonths).length;
@@ -2066,7 +2077,7 @@
 
     var curVal = 0, prevVal = 0;
     ORDERS.forEach(function (o) {
-      if (o.valorInvoice == null || !o.data) return;
+      if (o.valorInvoice == null || !o.data || !matchesCountry(o)) return;
       var m = new Date(o.data).getUTCMonth() + 1;
       if (!targetMonths[m]) return;
       if (o.year === targetYear) curVal += o.valorInvoice;
@@ -2076,7 +2087,7 @@
     return { targetYear: targetYear, prevYear: prevYear, growth: (curVal - prevVal) / prevVal, curVal: curVal, prevVal: prevVal, monthCount: monthCount };
   }
 
-  function renderFaturamentoKPIs(data, yearFilter) {
+  function renderFaturamentoKPIs(data, yearFilter, countryFilter) {
     var kpis = [
       { label: 'Faturamento total', value: fmtBRL(data.totals.revenue), note: yearFilter === 'all' ? '2024 – 2026 (parcial)' : yearFilter + (yearFilter === '2026' ? ' (parcial)' : '') },
       { label: 'Pedidos com valor', value: fmt(data.totals.shipments), note: 'notas de exportação com valor preenchido' },
@@ -2084,7 +2095,7 @@
       { label: 'Países atendidos', value: fmt(data.topCountries.length), note: 'destinos com valor de nota fiscal' }
     ];
 
-    var yoy = computeFaturamentoYoy(yearFilter);
+    var yoy = computeFaturamentoYoy(yearFilter, countryFilter);
     if (yoy) {
       kpis.push({
         label: 'Crescimento vs ' + yoy.prevYear,
@@ -2401,7 +2412,7 @@
     var yearLabel = yearFilter === 'all' ? '2024–2026' : yearFilter;
     var scopeLabel = yearLabel + (monthFilter !== 'all' ? ' · ' + monthKeyLabel(monthFilter) : '') + ((countryFilter && countryFilter !== 'all') ? ' · ' + titleCase(countryFilter) : '');
 
-    renderFaturamentoKPIs(data, yearFilter);
+    renderFaturamentoKPIs(data, yearFilter, countryFilter);
     lastFaturamentoTrendSeries = data.monthlySeries;
     updateFaturamentoTrendSection();
     renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, yearFilter, compareYearsFaturamento);
@@ -3173,23 +3184,17 @@
   document.getElementById('faturamentoMonth').addEventListener('change', runFaturamento);
   faturamentoCountryInput.addEventListener('input', runFaturamento);
 
+  // Só limpa a COMPARAÇÃO de anos ao clicar fora - não mexe mais no filtro de mês/país
+  // (09/09/2026: clicar em qualquer lugar da página, tipo um gráfico, apagava o país escolhido
+  // sem querer; agora só some quando a pessoa apaga o campo ou escreve "todos").
   document.addEventListener('click', function (evt) {
     var panel = document.getElementById('panel-faturamento');
     if (!panel.classList.contains('active')) return;
     if (evt.target.closest('.filter-bar') || evt.target.closest('.tabs')) return;
-    var monthSel = document.getElementById('faturamentoMonth');
-    var hadCompare = compareYearsFaturamento.size > 0;
-    if (hadCompare) {
+    if (compareYearsFaturamento.size > 0) {
       compareYearsFaturamento.clear();
       renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, faturamentoYearSelect.value, compareYearsFaturamento);
       updateFaturamentoTrendSection();
-    }
-    if (monthSel.value !== 'all' || faturamentoCountryInput.value !== '') {
-      monthSel.value = 'all';
-      faturamentoCountryInput.value = '';
-      runFaturamento();
-    } else if (hadCompare) {
-      runFaturamento();
     }
   });
 
