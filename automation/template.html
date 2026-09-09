@@ -273,10 +273,10 @@
   .sku-scroll th:nth-child(2), .sku-scroll td:nth-child(2) { width: 14%; }
   .sku-scroll th:nth-child(3), .sku-scroll td:nth-child(3) { width: 11%; }
   .sku-scroll th:nth-child(4), .sku-scroll td:nth-child(4) { width: 8%; }
-  .sku-scroll th:nth-child(5), .sku-scroll td:nth-child(5) { width: 16%; overflow: hidden; text-overflow: ellipsis; }
-  .sku-scroll th:nth-child(6), .sku-scroll td:nth-child(6) { width: 13%; }
+  .sku-scroll th:nth-child(5), .sku-scroll td:nth-child(5) { width: 13%; overflow: hidden; text-overflow: ellipsis; }
+  .sku-scroll th:nth-child(6), .sku-scroll td:nth-child(6) { width: 11%; }
   .sku-scroll th:nth-child(7), .sku-scroll td:nth-child(7) { width: 8%; }
-  .sku-scroll th:nth-child(8), .sku-scroll td:nth-child(8) { width: 11%; }
+  .sku-scroll th:nth-child(8), .sku-scroll td:nth-child(8) { width: 16%; }
   .sku-scroll th:nth-child(9), .sku-scroll td:nth-child(9) { width: 7%; }
   /* Data com mudança mostra 2 datas (antes riscada + depois em laranja) - deixa cada uma na sua
      própria linha em vez de tentar caber as duas lado a lado numa coluna estreita (10/09/2026). */
@@ -3111,12 +3111,13 @@
       if (o.valorInvoice != null) {
         // Número da NF numa linha própria embaixo do valor, não do lado (10/09/2026) - assim
         // continua visível sem alargar a coluna e sem precisar de rolagem horizontal.
-        var valorLine = document.createElement('div'); valorLine.textContent = fmtBRL(o.valorInvoice);
-        tdValorNF.appendChild(valorLine);
+        tdValorNF.appendChild(document.createTextNode(fmtBRL(o.valorInvoice)));
         if (o.numeroNF) {
-          var nfLine = document.createElement('div'); nfLine.className = 'muted-cell'; nfLine.style.fontSize = '10px';
-          nfLine.textContent = 'NF ' + o.numeroNF;
-          tdValorNF.appendChild(nfLine);
+          var nfHint = document.createElement('span');
+          nfHint.className = 'muted-cell';
+          nfHint.style.marginLeft = '6px';
+          nfHint.textContent = 'NF ' + o.numeroNF;
+          tdValorNF.appendChild(nfHint);
         }
       } else {
         tdValorNF.textContent = '—';
