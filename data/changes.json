@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T21:28:58.093Z",
+  "generatedAt": "2026-09-09T21:34:07.709Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -16,7 +16,13 @@
     "20170809",
     "20170818",
     "20170867",
-    "20170878"
+    "20170876",
+    "20170878",
+    "20170882",
+    "20170879",
+    "20170883",
+    "20170880",
+    "20170881"
   ],
   "itemChanges": [
     {
@@ -95,6 +101,27 @@
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
+    },
+    {
+      "invoice": "20170876",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 1950
+    },
+    {
+      "invoice": "20170878",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 150
+    },
+    {
+      "invoice": "20170878",
+      "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 350
     },
     {
       "invoice": "20170878",
@@ -263,6 +290,244 @@
       "type": "novo",
       "oldVolume": 0,
       "newVolume": 10
+    },
+    {
+      "invoice": "20170882",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 360
+    },
+    {
+      "invoice": "20170879",
+      "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G-FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 400
+    },
+    {
+      "invoice": "20170879",
+      "produto": "FARINHA ROSCA DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 50
+    },
+    {
+      "invoice": "20170879",
+      "produto": "COMINHO EM PO DA TERRINHA 50 G  - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 40
+    },
+    {
+      "invoice": "20170879",
+      "produto": "MOLHO ALHO DA TERRINHA 150 ML CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170879",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 500
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FUBA MIMOSO DA TERRINHA 500 G FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 10
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FARINHA MANDIOCA TORRADA DA TERRINHA 500G FD12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 10
+    },
+    {
+      "invoice": "20170883",
+      "produto": "TAPIOCA DA TERRINHA NA MEDIDA 490 G - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 10
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FLOCAO DE MILHO DA TERRINHA 400G - FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 10
+    },
+    {
+      "invoice": "20170883",
+      "produto": "CANJICA BRANCA DA TERRINHA 400 G - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 10
+    },
+    {
+      "invoice": "20170883",
+      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 150
+    },
+    {
+      "invoice": "20170883",
+      "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170883",
+      "produto": "POLVILHO DOCE DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170883",
+      "produto": "POLVILHO AZEDO DA TERRINHA 500 G FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FLOCAO DE MILHO DA TERRINHA 400G - FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FAROFA PRONTA DA TERRINHA TRADICIONAL 400 G - FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 30
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FAROFA PRONTA DA TERRINHA APIMENTADA 400 G - FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "BOLACHA DA TERRINHA COQUINHO 250 g - FD 20",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "FARINHA MANDIOCA FINA CRUA DA TERRINHA 500 - FD 12.0",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "TRIGO PARA KIBE DA TERRINHA 500 G FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "CANJICA AMARELA DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "BATATA PALHA DA TERRINHA EX FINA 100G CX 20",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "BATATA PALHA DA TERRINHA TRADIC 100G - CX20",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "TAPIOCA DA TERRINHA GRANULADA 400 G - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "SAGU MANDIOCA DA TERRINHA 400 G - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 5
+    },
+    {
+      "invoice": "20170883",
+      "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G-FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170880",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 1700
+    },
+    {
+      "invoice": "20170880",
+      "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 150
+    },
+    {
+      "invoice": "20170881",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 500
+    },
+    {
+      "invoice": "20170881",
+      "produto": "FAROFA PRONTA DA TERRINHA APIMENTADA 400 G - FD 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 50
+    },
+    {
+      "invoice": "20170881",
+      "produto": "BOLACHA DA TERRINHA COQUINHO 250 g - FD 20",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170881",
+      "produto": "FARINHA ROSCA DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 20
+    },
+    {
+      "invoice": "20170881",
+      "produto": "FAROFA DE MANDIOCA DA TERRINHA 400 G EXP (PORTUGAL)",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 800
     }
   ],
   "dateChanges": [

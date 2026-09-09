@@ -205,18 +205,28 @@ function resolveColumns(headerRow, schema) {
 
 const BAD_CODIGO = new Set(['#N/A', '#N/D', '#REF!', '#VALOR!', '#NOME?', '#NULO!', '#DIV/0!', '-', '']);
 
+// Lido com o mesmo parseCSV() (respeita aspas/vírgula/quebra de linha internas) e indexado pelo
+// NÚMERO DE LINHA explícito que o PowerShell escreve na frente de cada valor, não pela posição no
+// arquivo (10/09/2026) - a versão antiga usava .split('\n') ingênuo e a ordem de chegada das
+// linhas como índice; um valor de código com algo que gerasse uma quebra de linha extra (raro, mas
+// aconteceu) desalinhava TODOS os códigos daquele ponto em diante pro resto da aba inteira -
+// exatamente o bug de "código 304 aparecendo em produtos errados" relatado pelo usuário. Indexar
+// pelo número escrito (não pela posição) faz uma linha corrompida afetar só ela mesma.
 function loadCodigoColumn(filename) {
   if (!filename) return null;
   const p = path.join(RAW_DIR, filename);
   if (!fs.existsSync(p)) return null;
-  const lines = fs.readFileSync(p, 'utf8').split(/\r?\n/).filter(Boolean);
-  return lines.map(line => {
-    const idx = line.indexOf(',');
-    let val = line.slice(idx + 1);
-    if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1).replace(/""/g, '"');
-    val = val.trim();
-    return BAD_CODIGO.has(val) ? '' : val;
+  const text = fs.readFileSync(p, 'utf8');
+  const rows = parseCSV(text);
+  const map = {};
+  rows.forEach(r => {
+    if (!r.length) return;
+    const rowLabel = parseInt((r[0] || '').trim(), 10); // .trim() já remove BOM (U+FEFF) da 1a linha
+    if (isNaN(rowLabel)) return;
+    const val = (r[1] || '').trim();
+    map[rowLabel] = BAD_CODIGO.has(val) ? '' : val;
   });
+  return map;
 }
 
 function extractYear(year, filename, codigoFilename) {
