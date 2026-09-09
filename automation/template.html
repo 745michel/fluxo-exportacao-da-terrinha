@@ -2958,7 +2958,11 @@
       thd.appendChild(thr); t.appendChild(thd);
       var tb = document.createElement('tbody');
       var qProdutoHighlight = filterProduto.value.trim().toLowerCase();
-      o.items.forEach(function (it) {
+      // Agrupa por loja (09/09/2026, pedido do usuário) - produtos da mesma loja ficam juntos, um
+      // embaixo do outro, em vez de misturados na ordem original da planilha. Cópia só pra exibir
+      // (o.items em si não muda, então soma/detecção de alteração continuam intactas).
+      var sortedItems = o.items.slice().sort(function (a, b) { return (a.loja || '').localeCompare(b.loja || ''); });
+      sortedItems.forEach(function (it) {
         var r = document.createElement('tr');
         var change = getItemChange(o.invoice, it.produto);
         if (change) r.className = 'item-row-changed';
