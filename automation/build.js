@@ -104,16 +104,10 @@ function toMoney(v) {
 
 // column maps: index is 0-based into row array
 //
-// As 3 abas (2024/2025/2026) têm o MESMO layout de colunas 0-14 (cliente, tipo, pedido, invoice,
-// data, volume, codigo, produto, pais, estufagem, [vazia], agente, transportadora, etiquetagem/obs,
-// formato de data) - conferido direto nos CSVs exportados em 01/09/2026. Os schemas de 2024/2025
-// estavam com índices errados (herdados de uma versão antiga da planilha com colunas em outra
-// ordem) e nunca foram atualizados: "volume" lia a coluna de data, "produto" lia a coluna de
-// volume, etc. - por isso o volume acumulado de 2024/2025 aparecia quase zerado no painel.
-//
-// "Valor Nota Fiscal" (faturamento, usado como reserva - ver mais abaixo) é buscado pelo nome do
-// cabeçalho dentro de extractYear, não listado aqui: índice fixo já quebrou uma vez (volume de
-// 2024/2025) e uma coluna nova inserida na aba de 2026 quebraria de novo se fosse fixo aqui.
+// FALLBACK apenas (09/09/2026) - desde que resolveColumns()/HEADER_CANDIDATES passaram a existir,
+// essas colunas só são usadas se o nome do cabeçalho não bater com nenhum candidato conhecido
+// (planilha mudou de um jeito totalmente inesperado). Mantido com os índices observados em
+// 01/09/2026 como última rede de segurança, não como fonte principal.
 const SCHEMAS = {
   2026: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
   2025: { cliente: 0, tipo: 1, pedido: 2, invoice: 3, dataCarreg: 4, volume: 5, codigo: 6, produto: 7, pais: 8, estufagem: 9, agenteCarga: 11, transportadora: 12, etiquetagem: 13, formatoData: 14 },
@@ -164,6 +158,47 @@ function loadNotasFiscais() {
   return map;
 }
 
+// Candidatos de nome de cabeçalho por campo, na ordem de preferência (09/09/2026): a extração
+// agora busca cada coluna pelo NOME, não mais por posição fixa - índice fixo já quebrou 3 vezes
+// (volume de 2024/2025 lendo a coluna errada; "Valor Nota Fiscal" deslocado por uma coluna nova;
+// e o usuário decidiu inserir uma coluna do lado de "Descrição Produto" de propósito, que
+// deslocaria TODAS as colunas fixas depois dela). Mais de um nome por campo porque o texto do
+// cabeçalho varia entre as abas (ex.: "Agente " em 2024 vs "Agente de Carga" em 2025/2026).
+// SCHEMAS (acima) vira só um fallback, usado apenas se nenhum nome bater com o cabeçalho real.
+const HEADER_CANDIDATES = {
+  cliente: ['Cliente'],
+  tipo: ['Tipo de Exportação'],
+  pedido: ['Pedido Bluesoft'],
+  invoice: ['Invoice'],
+  dataCarreg: ['Data Carregamento / Entrega da Mercadoria'],
+  volume: ['Volume Cxs'],
+  produto: ['Descrição Produto'],
+  pais: ['País'],
+  estufagem: ['Tipo Estufagem'],
+  agenteCarga: ['Agente de Carga', 'Agente'],
+  transportadora: ['Transportadora Rodoviária'],
+  etiquetagem: ['Etiquetagem'],
+  formatoData: ['Formato de Data', 'Formato Data'],
+  obs: ['OBS'],
+  valorInvoice: ['Valor Nota Fiscal'],
+  pedidoTransferencia: ['Pedido de Transferência'],
+  pedidoCompra: ['Pedido de Compra'],
+};
+
+function resolveColumns(headerRow, schema) {
+  const resolved = {};
+  for (const field in HEADER_CANDIDATES) {
+    let idx = -1;
+    for (const name of HEADER_CANDIDATES[field]) {
+      idx = headerRow.findIndex(cell => cell.trim() === name);
+      if (idx !== -1) break;
+    }
+    if (idx === -1 && schema[field] !== undefined) idx = schema[field];
+    if (idx !== -1) resolved[field] = idx;
+  }
+  return resolved;
+}
+
 const BAD_CODIGO = new Set(['#N/A', '#N/D', '#REF!', '#VALOR!', '#NOME?', '#NULO!', '#DIV/0!', '-', '']);
 
 function loadCodigoColumn(filename) {
@@ -183,18 +218,9 @@ function loadCodigoColumn(filename) {
 function extractYear(year, filename, codigoFilename) {
   const text = fs.readFileSync(path.join(RAW_DIR, filename), 'utf8');
   const rows = parseCSV(text);
-  const schema = SCHEMAS[year];
   const codigoColumn = loadCodigoColumn(codigoFilename);
   let headerIdx = rows.findIndex(r => r.some(cell => cell.trim() === 'Cliente'));
-  // Busca "Valor Nota Fiscal" pelo NOME do cabeçalho, não por índice fixo (02/09/2026): a aba de
-  // 2026 ganhou uma coluna nova ("Nota Fiscal", o número) antes da coluna de valor, empurrando o
-  // índice fixo (17) uma posição pra frente só nessa aba - índice fixo já quebrou o volume de
-  // 2024/2025 uma vez antes por esse mesmo motivo, então esta coluna em especial não confia mais
-  // em número de coluna.
-  const valorInvoiceCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Valor Nota Fiscal');
-  // Só existem na aba 2026 (09/09/2026) - busca por nome também, mesmo motivo do valorInvoiceCol.
-  const pedidoTransferenciaCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Pedido de Transferência');
-  const pedidoCompraCol = rows[headerIdx].findIndex(cell => cell.trim() === 'Pedido de Compra');
+  const cols = resolveColumns(rows[headerIdx], SCHEMAS[year] || {});
   const dataRows = rows.slice(headerIdx + 1);
 
   const shipments = [];
@@ -204,32 +230,32 @@ function extractYear(year, filename, codigoFilename) {
     const r = dataRows[rowIdx];
     const codigo = codigoColumn ? (codigoColumn[headerIdx + 1 + rowIdx] || '') : '';
     if (r.every(c => (c || '').trim() === '')) continue;
-    const clienteRaw = (r[schema.cliente] || '').trim();
+    const clienteRaw = (r[cols.cliente] || '').trim();
     if (/^total(is)?$|^sub ?total$/i.test(clienteRaw)) { current = null; continue; }
     if (clienteRaw !== '') {
       current = {
         cliente: clienteRaw,
-        tipo: schema.tipo !== undefined ? (r[schema.tipo] || '').trim() : '',
-        pedido: (r[schema.pedido] || '').trim(),
-        invoice: (r[schema.invoice] || '').trim(),
-        pais: (r[schema.pais] || '').trim(),
-        estufagem: (r[schema.estufagem] || '').trim(),
-        transportadora: (r[schema.transportadora] || '').trim(),
-        agenteCarga: schema.agenteCarga !== undefined ? (r[schema.agenteCarga] || '').trim() : '',
-        etiquetagem: schema.etiquetagem !== undefined ? (r[schema.etiquetagem] || '').trim() : '',
-        formatoData: schema.formatoData !== undefined ? (r[schema.formatoData] || '').trim() : '',
-        obs: schema.obs !== undefined ? (r[schema.obs] || '').trim() : '',
-        dataCarreg: parseDateValue(r[schema.dataCarreg], year),
-        valorInvoicePlanilha: valorInvoiceCol !== -1 ? toMoney(r[valorInvoiceCol]) : null,
-        pedidoTransferencia: pedidoTransferenciaCol !== -1 ? (r[pedidoTransferenciaCol] || '').trim() : '',
-        pedidoCompra: pedidoCompraCol !== -1 ? (r[pedidoCompraCol] || '').trim() : '',
+        tipo: cols.tipo !== undefined ? (r[cols.tipo] || '').trim() : '',
+        pedido: (r[cols.pedido] || '').trim(),
+        invoice: (r[cols.invoice] || '').trim(),
+        pais: (r[cols.pais] || '').trim(),
+        estufagem: (r[cols.estufagem] || '').trim(),
+        transportadora: (r[cols.transportadora] || '').trim(),
+        agenteCarga: cols.agenteCarga !== undefined ? (r[cols.agenteCarga] || '').trim() : '',
+        etiquetagem: cols.etiquetagem !== undefined ? (r[cols.etiquetagem] || '').trim() : '',
+        formatoData: cols.formatoData !== undefined ? (r[cols.formatoData] || '').trim() : '',
+        obs: cols.obs !== undefined ? (r[cols.obs] || '').trim() : '',
+        dataCarreg: parseDateValue(r[cols.dataCarreg], year),
+        valorInvoicePlanilha: cols.valorInvoice !== undefined ? toMoney(r[cols.valorInvoice]) : null,
+        pedidoTransferencia: cols.pedidoTransferencia !== undefined ? (r[cols.pedidoTransferencia] || '').trim() : '',
+        pedidoCompra: cols.pedidoCompra !== undefined ? (r[cols.pedidoCompra] || '').trim() : '',
         items: [],
       };
       shipments.push(current);
     }
     if (!current) continue;
-    const vol = toNumber(r[schema.volume]);
-    const produto = (r[schema.produto] || '').trim();
+    const vol = toNumber(r[cols.volume]);
+    const produto = (r[cols.produto] || '').trim();
     if (vol !== null || produto !== '') {
       current.items.push({ volume: vol || 0, produto, codigo: codigo || '' });
     }
