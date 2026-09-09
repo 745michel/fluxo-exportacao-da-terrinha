@@ -395,7 +395,6 @@
   .detail-items th:nth-child(2), .detail-items td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; }
   .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .loja-cell { border-radius: 4px; }
   .detail-items tfoot td { border-top: 1px solid var(--border); font-weight: 650; color: var(--ink); padding-top: 7px; }
 
   .long-table table { table-layout: fixed; }
@@ -1063,9 +1062,16 @@
   }
 
   var TIPO_CLASS = { 'DIRETA': 'tipo-direta', 'EXPORTAÇÃO DIRETA': 'tipo-direta', 'TRADE': 'tipo-trade', 'INDIRETA': 'tipo-indireta' };
-  // Cores fixas pros valores de Loja já conhecidos (09/09/2026); LOJA_COLOR_DEFAULT cobre qualquer
-  // valor novo que apareça na planilha no futuro, pra nunca ficar sem cor.
-  var LOJA_COLORS = { 'MATRIZ': 'var(--info-wash)', 'PEGAR DO ESTOQUE': 'var(--good-wash)' };
+  // Cores fixas pros valores de Loja, padronizadas a pedido do usuário (09/09/2026) - marrom e
+  // amarelo queimado são cores próprias (não reaproveita --warn-wash, que já é o laranja de
+  // "alterado" - senão um item "Pegar do Estoque" comum pareceria um alerta de mudança).
+  // LOJA_COLOR_DEFAULT cobre qualquer valor novo que apareça na planilha no futuro.
+  var LOJA_COLORS = {
+    '2JM': 'rgba(62,207,110,0.30)',
+    'MATRIZ': 'rgba(56,189,248,0.30)',
+    'FILIAL': 'rgba(150,100,60,0.34)',
+    'PEGAR DO ESTOQUE': 'rgba(184,138,0,0.32)',
+  };
   var LOJA_COLOR_DEFAULT = 'var(--other-wash)';
 
   function formatDate(iso) {
@@ -2971,6 +2977,12 @@
         var r = document.createElement('tr');
         var change = getItemChange(o.invoice, it.produto);
         if (change) r.className = 'item-row-changed';
+        // Cor por loja na linha inteira (09/09/2026, pedido do usuário) - antes só a célula da
+        // Loja ficava colorida. Aplicada em cada <td> (não dá pra pintar só a <tr>: ".detail-row
+        // td" já dá um fundo opaco pra cada célula, que esconderia qualquer cor posta só na linha).
+        // Só aplica quando o item NÃO está "alterado" - estilo inline sempre vence regra de classe
+        // (.item-row-changed td), então pintar por cima escondereria o alerta laranja de mudança.
+        var rowLojaColor = (!change && it.loja) ? (LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT) : null;
         var codigoDisplay = it.codigo || '—';
         var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell';
         tdC.appendChild(highlightMatch(codigoDisplay, qProdutoHighlight));
@@ -2988,9 +3000,11 @@
         } else {
           tdV.textContent = fmt(it.volume);
         }
-        var tdL = document.createElement('td'); tdL.className = it.loja ? 'loja-cell' : 'muted-cell'; tdL.textContent = it.loja || '—';
-        if (it.loja) tdL.style.background = LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT;
-        r.appendChild(tdC); r.appendChild(tdP); r.appendChild(tdV); r.appendChild(tdL);
+        var tdL = document.createElement('td'); tdL.className = it.loja ? '' : 'muted-cell'; tdL.textContent = it.loja || '—';
+        [tdC, tdP, tdV, tdL].forEach(function (td) {
+          if (rowLojaColor) td.style.background = rowLojaColor;
+          r.appendChild(td);
+        });
         tb.appendChild(r);
       });
       t.appendChild(tb);
