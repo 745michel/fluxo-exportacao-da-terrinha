@@ -263,8 +263,24 @@
   .filter-count { font-size: 12px; color: var(--ink-muted); margin-left: auto; white-space: nowrap; }
 
   /* SKU table */
-  .sku-scroll { max-height: 660px; overflow-y: auto; overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
-  .sku-scroll table { font-size: 12px; }
+  .sku-scroll { max-height: 660px; overflow-y: auto; overflow-x: hidden; border: 1px solid var(--border); border-radius: 10px; }
+  /* Largura fixa por coluna (10/09/2026) - antes a tabela só crescia com o conteúdo e forçava
+     rolagem horizontal em telas menores; com table-layout:fixed + % por coluna ela sempre cabe na
+     largura disponível, quebrando o texto que não couber (Cliente/País já quebravam antes mesmo
+     sem isso). */
+  .sku-scroll table { font-size: 12px; table-layout: fixed; width: 100%; }
+  .sku-scroll th:nth-child(1), .sku-scroll td:nth-child(1) { width: 22px; }
+  .sku-scroll th:nth-child(2), .sku-scroll td:nth-child(2) { width: 14%; }
+  .sku-scroll th:nth-child(3), .sku-scroll td:nth-child(3) { width: 11%; }
+  .sku-scroll th:nth-child(4), .sku-scroll td:nth-child(4) { width: 8%; }
+  .sku-scroll th:nth-child(5), .sku-scroll td:nth-child(5) { width: 16%; overflow: hidden; text-overflow: ellipsis; }
+  .sku-scroll th:nth-child(6), .sku-scroll td:nth-child(6) { width: 13%; }
+  .sku-scroll th:nth-child(7), .sku-scroll td:nth-child(7) { width: 8%; }
+  .sku-scroll th:nth-child(8), .sku-scroll td:nth-child(8) { width: 11%; }
+  .sku-scroll th:nth-child(9), .sku-scroll td:nth-child(9) { width: 7%; }
+  /* Data com mudança mostra 2 datas (antes riscada + depois em laranja) - deixa cada uma na sua
+     própria linha em vez de tentar caber as duas lado a lado numa coluna estreita (10/09/2026). */
+  .sku-scroll td:nth-child(3) .qty-old, .sku-scroll td:nth-child(3) .qty-new { display: block; margin-right: 0; }
   .sku-scroll thead th {
     position: sticky; top: 0; background: var(--surface-2); z-index: 1; cursor: pointer; user-select: none;
   }
