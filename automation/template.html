@@ -141,8 +141,7 @@
   .tab-panel.analise-locked .analise-gate { display: block; }
 
   /* KPI row */
-  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  #faturamentoKpiRow { grid-template-columns: repeat(5, 1fr); }
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
   .kpi {
     position: relative;
     background: var(--surface);
@@ -448,7 +447,7 @@
   .detail-inner { padding: 14px 16px 16px 42px; }
 
   @media (max-width: 860px) {
-    .kpi-row, #faturamentoKpiRow { grid-template-columns: repeat(2, 1fr); }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .grid-2 { grid-template-columns: 1fr; }
     .hbar-label { width: 96px; }
   }
@@ -1070,6 +1069,38 @@
   }
 
   /* ---------- KPI row ---------- */
+  // Compara o mesmo conjunto de meses nos dois anos (não o ano inteiro), igual ao "Crescimento"
+  // da aba Faturamento (09/09/2026) - 2026 só tem dado até setembro, comparar o ano cheio de 2025
+  // contra o parcial de 2026 sempre pareceria queda, mesmo crescendo. Usa SKU_ROWS (não DATA.byYear
+  // filtrado) porque precisa do detalhe mês a mês, não só o total do ano.
+  function computeVolumeYoy(yearFilter) {
+    var years = Object.keys(DATA.byYear).map(function (y) { return parseInt(y, 10); }).sort(function (a, b) { return a - b; });
+    if (years.length < 2) return null;
+    var targetYear = yearFilter === 'all' ? years[years.length - 1] : parseInt(yearFilter, 10);
+    var idx = years.indexOf(targetYear);
+    if (idx <= 0) return null;
+    var prevYear = years[idx - 1];
+
+    var targetMonths = {};
+    SKU_ROWS.forEach(function (r) {
+      if (r.year !== targetYear || !r.data) return;
+      targetMonths[new Date(r.data).getUTCMonth() + 1] = true;
+    });
+    var monthCount = Object.keys(targetMonths).length;
+    if (!monthCount) return null;
+
+    var curVal = 0, prevVal = 0;
+    SKU_ROWS.forEach(function (r) {
+      if (!r.data) return;
+      var m = new Date(r.data).getUTCMonth() + 1;
+      if (!targetMonths[m]) return;
+      if (r.year === targetYear) curVal += r.volume;
+      else if (r.year === prevYear) prevVal += r.volume;
+    });
+    if (!prevVal) return null;
+    return { targetYear: targetYear, prevYear: prevYear, growth: (curVal - prevVal) / prevVal, curVal: curVal, prevVal: prevVal, monthCount: monthCount };
+  }
+
   function renderKPIs(data, yearFilter) {
     var kpis = [
       { label: 'Volume total (cx)', value: fmt(data.totals.volume), note: yearFilter === 'all' ? '2024 – 2026 (parcial)' : yearFilter + (yearFilter === '2026' ? ' (parcial)' : '') },
@@ -1077,6 +1108,19 @@
       { label: 'Países atendidos', value: fmt(data.countryCount), note: 'destinos distintos' },
       { label: 'Clientes ativos', value: fmt(data.clientCount), note: 'compradores distintos' }
     ];
+
+    var yoyVol = computeVolumeYoy(yearFilter);
+    if (yoyVol) {
+      kpis.push({
+        label: 'Crescimento vs ' + yoyVol.prevYear,
+        value: (yoyVol.growth >= 0 ? '+' : '') + pct(yoyVol.growth),
+        note: 'primeiros ' + yoyVol.monthCount + ' meses: ' + fmt(yoyVol.curVal) + ' vs ' + fmt(yoyVol.prevVal) + ' cx',
+        color: yoyVol.growth >= 0 ? 'var(--good)' : 'var(--bad)'
+      });
+    } else {
+      kpis.push({ label: 'Crescimento vs ano anterior', value: '—', note: 'sem ano anterior para comparar' });
+    }
+
     var row = document.getElementById('kpiRow');
     row.innerHTML = '';
     kpis.forEach(function (k) {
@@ -1084,6 +1128,7 @@
       tile.className = 'kpi fade-in-el';
       var l = document.createElement('div'); l.className = 'kpi-label'; l.textContent = k.label;
       var v = document.createElement('div'); v.className = 'kpi-value'; v.textContent = k.value;
+      if (k.color) v.style.color = k.color;
       var n = document.createElement('div'); n.className = 'kpi-note'; n.textContent = k.note;
       tile.appendChild(l); tile.appendChild(v); tile.appendChild(n);
       row.appendChild(tile);
