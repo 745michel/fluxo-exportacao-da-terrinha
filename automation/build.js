@@ -182,6 +182,9 @@ const HEADER_CANDIDATES = {
   formatoData: ['Formato de Data', 'Formato Data'],
   obs: ['OBS'],
   valorInvoice: ['Valor Nota Fiscal'],
+  // Só existe separado do valor em 2025/2026 (nomeada diferente em cada aba); 2024 não tem essa
+  // coluna, só o valor - fica null pra pedidos de 2024, igual Pedido de Transferência/Compra.
+  numeroNF: ['Nota Fiscal', 'Numero da  Nota Fiscal', 'Numero da Nota Fiscal'],
   pedidoTransferencia: ['Pedido de Transferência'],
   pedidoCompra: ['Pedido de Compra'],
 };
@@ -248,6 +251,7 @@ function extractYear(year, filename, codigoFilename) {
         obs: cols.obs !== undefined ? (r[cols.obs] || '').trim() : '',
         dataCarreg: parseDateValue(r[cols.dataCarreg], year),
         valorInvoicePlanilha: cols.valorInvoice !== undefined ? toMoney(r[cols.valorInvoice]) : null,
+        numeroNF: cols.numeroNF !== undefined ? (r[cols.numeroNF] || '').trim() : '',
         pedidoTransferencia: cols.pedidoTransferencia !== undefined ? (r[cols.pedidoTransferencia] || '').trim() : '',
         pedidoCompra: cols.pedidoCompra !== undefined ? (r[cols.pedidoCompra] || '').trim() : '',
         items: [],
@@ -315,6 +319,7 @@ function buildOrders(shipments, notasFiscais) {
     etiquetagem: (s.etiquetagem || '').trim(),
     formatoData: (s.formatoData || '').trim(),
     obs: (s.obs || '').trim(),
+    numeroNF: (s.numeroNF || '').trim(),
     pedidoTransferencia: (s.pedidoTransferencia || '').trim(),
     pedidoCompra: (s.pedidoCompra || '').trim(),
     data: s.dataCarreg,

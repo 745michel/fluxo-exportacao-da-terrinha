@@ -3092,7 +3092,18 @@
 
       var tdValorNF = document.createElement('td');
       tdValorNF.className = o.valorInvoice != null ? 'num' : 'num muted-cell';
-      tdValorNF.textContent = o.valorInvoice != null ? fmtBRL(o.valorInvoice) : '—';
+      if (o.valorInvoice != null) {
+        tdValorNF.appendChild(document.createTextNode(fmtBRL(o.valorInvoice)));
+        if (o.numeroNF) {
+          var nfHint = document.createElement('span');
+          nfHint.className = 'muted-cell';
+          nfHint.style.marginLeft = '6px';
+          nfHint.textContent = 'NF ' + o.numeroNF;
+          tdValorNF.appendChild(nfHint);
+        }
+      } else {
+        tdValorNF.textContent = '—';
+      }
 
       var tdTipo = document.createElement('td');
       var normTipo = normalizeTipo(o.tipo);
