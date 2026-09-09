@@ -2037,9 +2037,8 @@
     };
   }
 
-  // Ano sempre mostra o total geral (sem filtro de mês/país) - igual ao gráfico "Volume por ano"
-  // da aba Análise, que também nunca reflete o filtro de país/mês. Calculado uma vez só, os
-  // pedidos não mudam depois que a página carrega.
+  // Versão sem filtro nenhum - usada só pra saber quais ANOS existem (enumeração), não os valores
+  // em si; os valores exibidos vêm de computeByYearRevenue(country), que respeita o país escolhido.
   var BY_YEAR_REVENUE = (function () {
     var byYear = {};
     ORDERS.forEach(function (o) {
@@ -2048,6 +2047,20 @@
     });
     return byYear;
   })();
+
+  // Faturamento por ano respeitando o país escolhido (09/09/2026): antes usava sempre
+  // BY_YEAR_REVENUE (sem filtro nenhum), então filtrar por país em qualquer outro card da aba não
+  // refletia nesse gráfico nem na comparação mês a mês por ano.
+  function computeByYearRevenue(countryFilter) {
+    var countryQ = (countryFilter && countryFilter !== 'all') ? countryFilter.trim().toLowerCase() : '';
+    var byYear = {};
+    ORDERS.forEach(function (o) {
+      if (o.valorInvoice == null) return;
+      if (countryQ && titleCase(o.pais).toLowerCase().indexOf(countryQ) === -1) return;
+      byYear[o.year] = (byYear[o.year] || 0) + o.valorInvoice;
+    });
+    return byYear;
+  }
 
   // Compara o mesmo conjunto de meses nos dois anos (não o ano inteiro) de propósito (02/09/2026):
   // 2026 só tem dado até setembro, então comparar o ano cheio de 2025 contra o parcial de 2026
@@ -2278,11 +2291,14 @@
   /* ---------- Comparação de anos mês a mês (Faturamento) ---------- */
   var compareYearsFaturamento = new Set();
   var lastFaturamentoTrendSeries = [];
+  // País atualmente filtrado na aba - guardado à parte pra funções acionadas por clique (que não
+  // recebem os filtros como parâmetro) saberem qual país usar (09/09/2026).
+  var currentFaturamentoCountry = 'all';
 
   function toggleCompareYearFaturamento(yr) {
     if (compareYearsFaturamento.has(yr)) compareYearsFaturamento.delete(yr);
     else compareYearsFaturamento.add(yr);
-    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, document.getElementById('faturamentoYear').value, compareYearsFaturamento);
+    renderMoneyYearChart('faturamentoYearChart', computeByYearRevenue(currentFaturamentoCountry), document.getElementById('faturamentoYear').value, compareYearsFaturamento);
     updateFaturamentoTrendSection();
   }
 
@@ -2303,7 +2319,7 @@
 
     var seriesByYear = {};
     years.forEach(function (yr) {
-      var monthly = computeFaturamento(yr, 'all', 'all').monthlySeries;
+      var monthly = computeFaturamento(yr, 'all', currentFaturamentoCountry).monthlySeries;
       var byMonthNum = {};
       monthly.forEach(function (d) { byMonthNum[parseInt(d.month.split('-')[1], 10)] = d.revenue; });
       seriesByYear[yr] = byMonthNum;
@@ -2408,18 +2424,20 @@
   function renderFaturamento(yearFilter, monthFilter, countryFilter) {
     monthFilter = monthFilter || 'all';
     countryFilter = countryFilter || 'all';
+    currentFaturamentoCountry = countryFilter;
     var data = computeFaturamento(yearFilter, monthFilter, countryFilter);
     var yearLabel = yearFilter === 'all' ? '2024–2026' : yearFilter;
     var scopeLabel = yearLabel + (monthFilter !== 'all' ? ' · ' + monthKeyLabel(monthFilter) : '') + ((countryFilter && countryFilter !== 'all') ? ' · ' + titleCase(countryFilter) : '');
+    var byYearRevenueFiltered = computeByYearRevenue(countryFilter);
 
     renderFaturamentoKPIs(data, yearFilter, countryFilter);
     lastFaturamentoTrendSeries = data.monthlySeries;
     updateFaturamentoTrendSection();
-    renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, yearFilter, compareYearsFaturamento);
+    renderMoneyYearChart('faturamentoYearChart', byYearRevenueFiltered, yearFilter, compareYearsFaturamento);
 
     var countryTotal = data.topCountries.reduce(function (a, c) { return a + c.volume; }, 0);
     var clientTotal = data.topClients.reduce(function (a, c) { return a + c.volume; }, 0);
-    var yearGrandTotal = Object.keys(BY_YEAR_REVENUE).reduce(function (a, y) { return a + BY_YEAR_REVENUE[y]; }, 0);
+    var yearGrandTotal = Object.keys(byYearRevenueFiltered).reduce(function (a, y) { return a + byYearRevenueFiltered[y]; }, 0);
 
     var countryItems = data.topCountries.concat(countryTotal ? [{ pais: 'TOTAL', volume: countryTotal, isTotal: true }] : []);
     var clientItems = data.topClients.concat(clientTotal ? [{ cliente: 'TOTAL', volume: clientTotal, isTotal: true }] : []);
@@ -3193,7 +3211,7 @@
     if (evt.target.closest('.filter-bar') || evt.target.closest('.tabs')) return;
     if (compareYearsFaturamento.size > 0) {
       compareYearsFaturamento.clear();
-      renderMoneyYearChart('faturamentoYearChart', BY_YEAR_REVENUE, faturamentoYearSelect.value, compareYearsFaturamento);
+      renderMoneyYearChart('faturamentoYearChart', computeByYearRevenue(currentFaturamentoCountry), faturamentoYearSelect.value, compareYearsFaturamento);
       updateFaturamentoTrendSection();
     }
   });
