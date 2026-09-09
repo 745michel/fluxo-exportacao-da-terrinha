@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-09T21:22:39.236Z",
+  "generatedAt": "2026-09-09T21:28:58.093Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -15,11 +15,8 @@
     "20170797",
     "20170809",
     "20170818",
-    "20170870",
-    "20170872",
     "20170867",
-    "20170878",
-    "20170882"
+    "20170878"
   ],
   "itemChanges": [
     {
@@ -98,13 +95,6 @@
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
-    },
-    {
-      "invoice": "20170872",
-      "produto": "PIPOCA DE MICROONDAS CARAMELO DA TERRINHA 85G CX 24 / MICROWAVE POPCORN CARAMEL DA TERRINHA 85 G - BX 24",
-      "type": "quantidade",
-      "oldVolume": 5,
-      "newVolume": 10
     },
     {
       "invoice": "20170878",
@@ -273,13 +263,6 @@
       "type": "novo",
       "oldVolume": 0,
       "newVolume": 10
-    },
-    {
-      "invoice": "20170882",
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 360
     }
   ],
   "dateChanges": [
@@ -322,11 +305,6 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
-    },
-    {
-      "invoice": "20170870",
-      "oldDate": "2026-09-09T00:00:00.000Z",
-      "newDate": "2026-09-10T00:00:00.000Z"
     },
     {
       "invoice": "20170867",
