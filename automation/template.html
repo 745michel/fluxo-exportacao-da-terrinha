@@ -270,14 +270,17 @@
      sem isso). */
   .sku-scroll table { font-size: 12px; table-layout: fixed; width: 100%; }
   .sku-scroll th:nth-child(1), .sku-scroll td:nth-child(1) { width: 22px; }
-  .sku-scroll th:nth-child(2), .sku-scroll td:nth-child(2) { width: 14%; }
-  .sku-scroll th:nth-child(3), .sku-scroll td:nth-child(3) { width: 11%; }
+  .sku-scroll th:nth-child(2), .sku-scroll td:nth-child(2) { width: 12%; }
+  .sku-scroll th:nth-child(3), .sku-scroll td:nth-child(3) { width: 9%; }
   .sku-scroll th:nth-child(4), .sku-scroll td:nth-child(4) { width: 8%; }
   .sku-scroll th:nth-child(5), .sku-scroll td:nth-child(5) { width: 13%; overflow: hidden; text-overflow: ellipsis; }
-  .sku-scroll th:nth-child(6), .sku-scroll td:nth-child(6) { width: 11%; }
+  .sku-scroll th:nth-child(6), .sku-scroll td:nth-child(6) { width: 15%; }
   .sku-scroll th:nth-child(7), .sku-scroll td:nth-child(7) { width: 8%; }
   .sku-scroll th:nth-child(8), .sku-scroll td:nth-child(8) { width: 16%; }
   .sku-scroll th:nth-child(9), .sku-scroll td:nth-child(9) { width: 7%; }
+  /* País pode quebrar em 2 linhas em vez de truncar com "..." (10/09/2026) - mesmo com a coluna
+     mais larga, nomes bem longos ("Emirados Árabes Unidos") ainda não caberiam numa linha só. */
+  .sku-scroll td:nth-child(6) .country-label span { white-space: normal; }
   /* Data com mudança mostra 2 datas (antes riscada + depois em laranja) - deixa cada uma na sua
      própria linha em vez de tentar caber as duas lado a lado numa coluna estreita (10/09/2026). */
   .sku-scroll td:nth-child(3) .qty-old, .sku-scroll td:nth-child(3) .qty-new { display: block; margin-right: 0; }
