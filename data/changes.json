@@ -1,6 +1,8 @@
 {
-  "generatedAt": "2026-09-10T15:01:26.027Z",
-  "newInvoices": [],
+  "generatedAt": "2026-09-10T21:40:02.706Z",
+  "newInvoices": [
+    "20170884"
+  ],
   "changedInvoices": [
     "20170450",
     "20170451",
@@ -15,6 +17,7 @@
     "20170797",
     "20170809",
     "20170818",
+    "20170866",
     "20170882"
   ],
   "itemChanges": [
@@ -94,6 +97,13 @@
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
+    },
+    {
+      "invoice": "20170866",
+      "produto": "TAPIOCA DA TERRINHA 70G (LISA) - CX 100 / TAPIOCA FLOUR DA TERRINHA 70G (SMOOTH) - BX 100",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 180
     },
     {
       "invoice": "20170882",
