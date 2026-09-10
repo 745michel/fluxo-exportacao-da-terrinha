@@ -458,9 +458,12 @@
   /* Borda em vez de fundo (10/09/2026) - fundo por-célula escondia a cor da loja quando os dois
      se aplicavam ao mesmo item; borda funciona em cima de qualquer cor de fundo. */
   .item-row-changed td:first-child { box-shadow: inset 3px 0 0 0 var(--warn); }
+  /* Item NOVO usa verde (mesma cor de "pedido novo"), não laranja - laranja é só pra quantidade
+     alterada num item que já existia (10/09/2026, a pedido do usuário). */
+  .item-row-changed.item-row-new-item td:first-child { box-shadow: inset 3px 0 0 0 var(--good); }
   .item-tag-new {
     display: inline-block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
-    color: var(--accent-ink); background: var(--warn); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: middle;
+    color: var(--accent-ink); background: var(--good); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: middle;
   }
   .qty-old { text-decoration: line-through; color: var(--ink-muted); margin-right: 6px; font-variant-numeric: tabular-nums; }
   .qty-new { color: var(--warn); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -3007,7 +3010,7 @@
         // Alerta de alteração agora é uma borda (ver CSS .item-row-changed), não mais um fundo
         // por-célula (10/09/2026) - antes disputava com a cor da loja pela mesma célula (se os
         // dois se aplicassem, só um aparecia). Cor da loja passa a valer sempre, mudou ou não.
-        if (change) r.className = 'item-row-changed';
+        if (change) r.className = 'item-row-changed' + (change.type === 'novo' ? ' item-row-new-item' : '');
         var rowLojaColor = it.loja ? (LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT) : null;
         var codigoDisplay = it.codigo || '—';
         var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell';
