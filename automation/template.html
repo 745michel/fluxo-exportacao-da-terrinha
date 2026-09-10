@@ -269,6 +269,11 @@
      largura disponível, quebrando o texto que não couber (Cliente/País já quebravam antes mesmo
      sem isso). */
   .sku-scroll table { font-size: 12px; table-layout: fixed; width: 100%; }
+  /* Alinha todas as células no topo da linha (10/09/2026) - quando o Status tem várias linhas
+     (badge "Alterado" + botão Validar), as outras colunas ficavam centralizadas no meio da linha
+     inteira (herdado de "td { vertical-align: middle }"), aparecendo desalinhadas/"em cima" do
+     texto errado em vez de ao lado da primeira linha do status. */
+  .sku-scroll td { vertical-align: top; }
   .sku-scroll th:nth-child(1), .sku-scroll td:nth-child(1) { width: 22px; }
   .sku-scroll th:nth-child(2), .sku-scroll td:nth-child(2) { width: 12%; }
   .sku-scroll th:nth-child(3), .sku-scroll td:nth-child(3) { width: 9%; }
