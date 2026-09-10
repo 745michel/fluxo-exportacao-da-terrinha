@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-10T12:58:53.937Z",
+  "generatedAt": "2026-09-10T15:01:26.027Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -15,8 +15,7 @@
     "20170797",
     "20170809",
     "20170818",
-    "20170882",
-    "20170883"
+    "20170882"
   ],
   "itemChanges": [
     {
@@ -102,153 +101,6 @@
       "type": "novo",
       "oldVolume": 0,
       "newVolume": 360
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FUBA MIMOSO DA TERRINHA 500 G FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 10
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FARINHA MANDIOCA TORRADA DA TERRINHA 500G FD12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 10
-    },
-    {
-      "invoice": "20170883",
-      "produto": "TAPIOCA DA TERRINHA NA MEDIDA 490 G - CX 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 10
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FLOCAO DE MILHO DA TERRINHA 400G - FD 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 10
-    },
-    {
-      "invoice": "20170883",
-      "produto": "CANJICA BRANCA DA TERRINHA 400 G - CX 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 10
-    },
-    {
-      "invoice": "20170883",
-      "produto": "TAPIOCA DA TERRINHA EXP (5 IDIOMAS) 500 G - CX 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 150
-    },
-    {
-      "invoice": "20170883",
-      "produto": "TAPIOCA DA TERRINHA 1 KG - CX 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 20
-    },
-    {
-      "invoice": "20170883",
-      "produto": "POLVILHO DOCE DA TERRINHA 500 G - FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 20
-    },
-    {
-      "invoice": "20170883",
-      "produto": "POLVILHO AZEDO DA TERRINHA 500 G FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 20
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FLOCAO DE MILHO DA TERRINHA 400G - FD 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 20
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FAROFA PRONTA DA TERRINHA TRADICIONAL 400 G - FD 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 30
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FAROFA PRONTA DA TERRINHA APIMENTADA 400 G - FD 24",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "BOLACHA DA TERRINHA COQUINHO 250 g - FD 20",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "FARINHA MANDIOCA FINA CRUA DA TERRINHA 500 - FD 12.0",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "TRIGO PARA KIBE DA TERRINHA 500 G FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "CANJICA AMARELA DA TERRINHA 500 G - FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "BATATA PALHA DA TERRINHA EX FINA 100G CX 20",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "BATATA PALHA DA TERRINHA TRADIC 100G - CX20",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "TAPIOCA DA TERRINHA GRANULADA 400 G - CX 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "SAGU MANDIOCA DA TERRINHA 400 G - CX 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 5
-    },
-    {
-      "invoice": "20170883",
-      "produto": "MISTURA PAO DE QUEIJO DA TERRINHA 250G-FD 12",
-      "type": "novo",
-      "oldVolume": 0,
-      "newVolume": 60
     }
   ],
   "dateChanges": [
