@@ -455,7 +455,9 @@
   .validate-btn:hover { background: rgba(255,255,255,0.08); }
   .validate-btn:disabled { opacity: 0.6; cursor: default; }
   .validate-btn:disabled:hover { background: none; }
-  .item-row-changed td { background: var(--warn-wash); }
+  /* Borda em vez de fundo (10/09/2026) - fundo por-célula escondia a cor da loja quando os dois
+     se aplicavam ao mesmo item; borda funciona em cima de qualquer cor de fundo. */
+  .item-row-changed td:first-child { box-shadow: inset 3px 0 0 0 var(--warn); }
   .item-tag-new {
     display: inline-block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
     color: var(--accent-ink); background: var(--warn); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: middle;
@@ -3002,21 +3004,30 @@
       sortedItems.forEach(function (it) {
         var r = document.createElement('tr');
         var change = getItemChange(o.invoice, it.produto);
+        // Alerta de alteração agora é uma borda (ver CSS .item-row-changed), não mais um fundo
+        // por-célula (10/09/2026) - antes disputava com a cor da loja pela mesma célula (se os
+        // dois se aplicassem, só um aparecia). Cor da loja passa a valer sempre, mudou ou não.
         if (change) r.className = 'item-row-changed';
-        // Cor por loja na linha inteira (09/09/2026, pedido do usuário) - antes só a célula da
-        // Loja ficava colorida. Aplicada em cada <td> (não dá pra pintar só a <tr>: ".detail-row
-        // td" já dá um fundo opaco pra cada célula, que esconderia qualquer cor posta só na linha).
-        // Só aplica quando o item NÃO está "alterado" - estilo inline sempre vence regra de classe
-        // (.item-row-changed td), então pintar por cima escondereria o alerta laranja de mudança.
-        var rowLojaColor = (!change && it.loja) ? (LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT) : null;
+        var rowLojaColor = it.loja ? (LOJA_COLORS[it.loja.toUpperCase()] || LOJA_COLOR_DEFAULT) : null;
         var codigoDisplay = it.codigo || '—';
         var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell';
         tdC.appendChild(highlightMatch(codigoDisplay, qProdutoHighlight));
         var produtoDisplay = titleCase(it.produto) || '—';
-        var tdP = document.createElement('td'); tdP.appendChild(highlightMatch(produtoDisplay, qProdutoHighlight)); tdP.title = produtoDisplay;
+        // Nome do produto num <span> próprio que trunca com "..." dentro de uma DIV flex interna
+        // (10/09/2026) - display:flex direto na <td> quebra o table-layout:fixed (coluna some);
+        // por isso o flex fica numa div dentro da célula, não na célula em si. A etiqueta "Novo"
+        // fica fora do span truncado, num irmão que nunca é cortado.
+        var tdP = document.createElement('td');
+        var tdPWrap = document.createElement('div'); tdPWrap.style.display = 'flex'; tdPWrap.style.alignItems = 'center'; tdPWrap.style.gap = '4px';
+        var produtoTextSpan = document.createElement('span');
+        produtoTextSpan.style.overflow = 'hidden'; produtoTextSpan.style.textOverflow = 'ellipsis'; produtoTextSpan.style.whiteSpace = 'nowrap'; produtoTextSpan.style.minWidth = '0';
+        produtoTextSpan.appendChild(highlightMatch(produtoDisplay, qProdutoHighlight));
+        tdPWrap.appendChild(produtoTextSpan);
+        tdP.appendChild(tdPWrap);
+        tdP.title = produtoDisplay;
         if (change && change.type === 'novo') {
-          var tagNew = document.createElement('span'); tagNew.className = 'item-tag-new'; tagNew.textContent = 'Novo';
-          tdP.appendChild(tagNew);
+          var tagNew = document.createElement('span'); tagNew.className = 'item-tag-new'; tagNew.style.flex = 'none'; tagNew.textContent = 'Novo';
+          tdPWrap.appendChild(tagNew);
         }
         var tdV = document.createElement('td'); tdV.className = 'num';
         if (change && change.type === 'quantidade') {
