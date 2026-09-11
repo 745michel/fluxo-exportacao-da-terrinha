@@ -418,7 +418,7 @@
   .etiq-nao { color: var(--bad); font-weight: 650; }
   .detail-items table { font-size: 11px; table-layout: fixed; }
   .detail-items th:nth-child(1), .detail-items td:nth-child(1) { width: 66px; white-space: nowrap; padding-right: 14px; }
-  .detail-items th:nth-child(2), .detail-items td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-items th:nth-child(2), .detail-items td:nth-child(2) { white-space: normal; overflow-wrap: break-word; }
   .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; }
   .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .detail-items tfoot td { border-top: 1px solid var(--border); font-weight: 650; color: var(--ink); padding-top: 7px; }
@@ -3021,9 +3021,9 @@
         // por isso o flex fica numa div dentro da célula, não na célula em si. A etiqueta "Novo"
         // fica fora do span truncado, num irmão que nunca é cortado.
         var tdP = document.createElement('td');
-        var tdPWrap = document.createElement('div'); tdPWrap.style.display = 'flex'; tdPWrap.style.alignItems = 'center'; tdPWrap.style.gap = '4px';
+        var tdPWrap = document.createElement('div'); tdPWrap.style.display = 'flex'; tdPWrap.style.alignItems = 'flex-start'; tdPWrap.style.gap = '4px';
         var produtoTextSpan = document.createElement('span');
-        produtoTextSpan.style.overflow = 'hidden'; produtoTextSpan.style.textOverflow = 'ellipsis'; produtoTextSpan.style.whiteSpace = 'nowrap'; produtoTextSpan.style.minWidth = '0';
+        produtoTextSpan.style.minWidth = '0';
         produtoTextSpan.appendChild(highlightMatch(produtoDisplay, qProdutoHighlight));
         tdPWrap.appendChild(produtoTextSpan);
         tdP.appendChild(tdPWrap);
