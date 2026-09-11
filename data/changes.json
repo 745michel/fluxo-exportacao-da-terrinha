@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T12:51:56.778Z",
+  "generatedAt": "2026-09-11T19:29:05.643Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -14,7 +14,11 @@
     "20170781",
     "20170797",
     "20170809",
-    "20170818"
+    "20170818",
+    "20170866",
+    "20170863",
+    "20170882",
+    "20170884"
   ],
   "itemChanges": [
     {
@@ -93,6 +97,104 @@
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
+    },
+    {
+      "invoice": "20170863",
+      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24 / EXP TAPIOCA FLOUR DA TERRINHA (VM) 500 G - BX 24",
+      "type": "quantidade",
+      "oldVolume": 1850,
+      "newVolume": 1800
+    },
+    {
+      "invoice": "20170882",
+      "produto": "TEMPERO BAIANO PO DA TERRINHA 50 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "TEMPERO PARA CHURRASCO DA TERRINHA 40G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "TEMPERO PARA CARNE DA TERRINHA 50 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "ALHO PASTA DA TERRINHA 200 GR - CX 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "COCO RALADO DESIDRATADO DATERRINHA 100 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "COCO RALADO UMIDO ADOCADO DA TERRINHA 100 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "COCO RALADO UMIDO ADOCADO DA TERRINHA 50 G - CX 40",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "COCO FLOCOS UMIDO ADOCADO DA TERRINHA 100 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 60
+    },
+    {
+      "invoice": "20170882",
+      "produto": "FARINHA ROSCA DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170882",
+      "produto": "ALHO DESIDRATADO GRANULADO DA TERRINHA 20 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170882",
+      "produto": "PAPRICA DOCE EM PO DA TERRINHA 15 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170882",
+      "produto": "COLORIFICO DA TERRINHA 500 G - FD 12",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
+    },
+    {
+      "invoice": "20170882",
+      "produto": "BICARBONATO DE SODIO DA TERRINHA 80 G - CX 24",
+      "type": "novo",
+      "oldVolume": 0,
+      "newVolume": 100
     }
   ],
   "dateChanges": [
@@ -135,6 +237,16 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170866",
+      "oldDate": "2026-09-11T00:00:00.000Z",
+      "newDate": "2026-09-14T00:00:00.000Z"
+    },
+    {
+      "invoice": "20170884",
+      "oldDate": null,
+      "newDate": "2026-10-22T00:00:00.000Z"
     }
   ]
 }
