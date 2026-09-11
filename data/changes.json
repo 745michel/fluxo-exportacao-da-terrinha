@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T19:58:07.797Z",
+  "generatedAt": "2026-09-11T20:17:21.329Z",
   "newInvoices": [],
   "changedInvoices": [
     "20170450",
@@ -15,9 +15,7 @@
     "20170797",
     "20170809",
     "20170818",
-    "20170863",
-    "20170882",
-    "20170884"
+    "20170882"
   ],
   "itemChanges": [
     {
@@ -96,13 +94,6 @@
       "type": "quantidade",
       "oldVolume": 10,
       "newVolume": 0
-    },
-    {
-      "invoice": "20170863",
-      "produto": "EXP TAPIOCA DA TERRINHA (VM) 500 G - CX 24 / EXP TAPIOCA FLOUR DA TERRINHA (VM) 500 G - BX 24",
-      "type": "quantidade",
-      "oldVolume": 1850,
-      "newVolume": 1800
     },
     {
       "invoice": "20170882",
@@ -236,11 +227,6 @@
       "invoice": "20170781",
       "oldDate": "2026-05-04T00:00:00.000Z",
       "newDate": "2026-04-27T00:00:00.000Z"
-    },
-    {
-      "invoice": "20170884",
-      "oldDate": null,
-      "newDate": "2026-10-22T00:00:00.000Z"
     }
   ]
 }

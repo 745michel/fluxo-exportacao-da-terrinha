@@ -48,7 +48,7 @@
     -webkit-font-smoothing: antialiased;
   }
   .wrap {
-    max-width: 1680px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 36px 24px 64px;
     display: flex;
@@ -450,8 +450,13 @@
   .validate-btn {
     display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 10px;
     font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-left: 8px;
-    padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; background: none;
-    cursor: pointer; white-space: nowrap; color: inherit;
+    padding: 2px 8px; border-radius: 10px; border: 1px solid currentColor; background: none;
+    cursor: pointer; color: inherit;
+    /* Botão "Validado (clique p/ reenviar)" é texto longo - sem quebrar (11/09/2026) ele
+       ultrapassava a largura da coluna Status (table-layout:fixed não recorta conteúdo que
+       transborda) e sobrepunha visualmente as colunas seguintes (Data/Invoice/Cliente). Deixa
+       quebrar em vez de manter numa linha só. */
+    white-space: normal; max-width: 100%; min-width: 0; text-align: center; line-height: 1.35;
   }
   .validate-btn:hover { background: rgba(255,255,255,0.08); }
   .validate-btn:disabled { opacity: 0.6; cursor: default; }
