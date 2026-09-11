@@ -416,11 +416,12 @@
   .detail-formato { font-family: var(--font-mono); white-space: pre-wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; color: var(--ink-2); }
   .etiq-sim { color: var(--good); font-weight: 650; }
   .etiq-nao { color: var(--bad); font-weight: 650; }
-  .detail-items table { font-size: 11px; table-layout: fixed; }
+  .detail-items { overflow-x: auto; }
+  .detail-items table { font-size: 11px; width: auto; min-width: 100%; }
   .detail-items th:nth-child(1), .detail-items td:nth-child(1) { width: 66px; white-space: nowrap; padding-right: 14px; }
-  .detail-items th:nth-child(2), .detail-items td:nth-child(2) { white-space: normal; overflow-wrap: break-word; }
-  .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; }
-  .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-items th:nth-child(2), .detail-items td:nth-child(2) { white-space: nowrap; }
+  .detail-items th:nth-child(3), .detail-items td:nth-child(3) { width: 90px; padding-right: 18px; white-space: nowrap; }
+  .detail-items th:nth-child(4), .detail-items td:nth-child(4) { width: 130px; padding-left: 14px; white-space: nowrap; }
   .detail-items tfoot td { border-top: 1px solid var(--border); font-weight: 650; color: var(--ink); padding-top: 7px; }
 
   .long-table table { table-layout: fixed; }
@@ -3016,10 +3017,10 @@
         var tdC = document.createElement('td'); tdC.className = it.codigo ? 'mono-code' : 'muted-cell';
         tdC.appendChild(highlightMatch(codigoDisplay, qProdutoHighlight));
         var produtoDisplay = titleCase(it.produto) || '—';
-        // Nome do produto num <span> próprio que trunca com "..." dentro de uma DIV flex interna
-        // (10/09/2026) - display:flex direto na <td> quebra o table-layout:fixed (coluna some);
-        // por isso o flex fica numa div dentro da célula, não na célula em si. A etiqueta "Novo"
-        // fica fora do span truncado, num irmão que nunca é cortado.
+        // Nome do produto numa linha só, sem quebra e sem truncar (11/09/2026) - tabela sem
+        // table-layout:fixed pra essa coluna crescer com o conteúdo; .detail-items tem
+        // overflow-x:auto pra rolar se ficar mais largo que o painel. Etiqueta "Novo" fica numa
+        // DIV flex interna à célula (display:flex direto na <td> quebraria o layout da tabela).
         var tdP = document.createElement('td');
         var tdPWrap = document.createElement('div'); tdPWrap.style.display = 'flex'; tdPWrap.style.alignItems = 'flex-start'; tdPWrap.style.gap = '4px';
         var produtoTextSpan = document.createElement('span');
