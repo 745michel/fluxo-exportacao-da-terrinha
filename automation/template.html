@@ -450,13 +450,8 @@
   .validate-btn {
     display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 10px;
     font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-left: 8px;
-    padding: 2px 8px; border-radius: 10px; border: 1px solid currentColor; background: none;
-    cursor: pointer; color: inherit;
-    /* Botão "Validado (clique p/ reenviar)" é texto longo - sem quebrar (11/09/2026) ele
-       ultrapassava a largura da coluna Status (table-layout:fixed não recorta conteúdo que
-       transborda) e sobrepunha visualmente as colunas seguintes (Data/Invoice/Cliente). Deixa
-       quebrar em vez de manter numa linha só. */
-    white-space: normal; max-width: 100%; min-width: 0; text-align: center; line-height: 1.35;
+    padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; background: none;
+    cursor: pointer; white-space: nowrap; color: inherit;
   }
   .validate-btn:hover { background: rgba(255,255,255,0.08); }
   .validate-btn:disabled { opacity: 0.6; cursor: default; }
@@ -2759,7 +2754,10 @@
     // chegado de verdade na pasta certa (browser configurado pra perguntar onde salvar, etc.) e
     // o botão desabilitado escondia isso - clicar de novo é sempre permitido, só pra garantir.
     function setLabel(pending) {
-      btn.textContent = pending ? 'Validado ✓ (clique p/ reenviar)' : 'Validar';
+      // Rótulo curto de propósito (11/09/2026) - a versão longa "(clique p/ reenviar)" não cabia
+      // numa linha na coluna Status e quebrava em 3 linhas (feio, ocupava a linha toda do pedido).
+      // A explicação completa continua no title (tooltip ao passar o mouse), só não fica visível.
+      btn.textContent = pending ? 'Validado ✓' : 'Validar';
       btn.title = pending
         ? 'Marcado como revisado. Se o destaque não sumir na próxima atualização, clique de novo.'
         : 'Marca esta alteração como revisada — some na próxima atualização automática';
